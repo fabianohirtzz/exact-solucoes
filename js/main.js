@@ -450,7 +450,10 @@
   let panelMax = 520;
 
   // Ancora a esteira perto do pé do palco e mede quanto espaço sobra acima dela para os cards.
-  const ZOOM = { desk: [.72, .62, .45], mob: [.62, .52, .44] };  // etapa 7, destino e clientes
+  // zoom da câmera: [etapas 1-6, etapa 7, destino, clientes]. No celular é fixo (sem a pista crescendo ao rolar).
+  const ZM = .64;
+  const ZOOM = { desk: [1, .72, .62, .45], mob: [ZM, ZM, ZM, ZM] };
+  const CLEAR = [110, 110, 300, 345, 280, 360, 360];  // no celular: altura das máquinas de cada etapa acima da esteira
   let bounds = [];
 
   // Ancora a esteira perto do pé do palco e calcula, para cada card, a faixa livre:
@@ -468,7 +471,7 @@
     const s = mobile ? W / 560 : Math.min(H / 740, W / 1100);
     view = { w: W / s, h: H / s, s, mobile };
     view.ax = view.w * (mobile ? .5 : .66);
-    view.ay = HA / s - (mobile ? 12 : 22) / s - (FLOOR - Y);
+    view.ay = HA / s - (mobile ? 12 : 22) / s - (FLOOR - Y) * (mobile ? ZM : 1);
     svg.setAttribute('viewBox', `0 0 ${view.w} ${view.h}`);
     const belt = view.ay * s - 4;                     // topo da esteira na tela, em px
     document.documentElement.style.setProperty('--belt', `${belt}px`);
@@ -476,17 +479,15 @@
     const road = z => (view.ay + (FLOOR - Y) * z) * s - 4;
     const topH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--top-h')) || 74;
     const gap = mobile ? 10 : 18;
-    const [z1, z2, z8] = mobile ? ZOOM.mob : ZOOM.desk;
+    const [z0, z1, z2, z8] = mobile ? ZOOM.mob : ZOOM.desk;
     const sy = (y, z) => (view.ay + (y - Y) * z) * s;   // altura na tela de um ponto do mundo
     bounds = panels.map((p, i) => {
       let bottom;
-      if (i < 6) bottom = belt - (mobile ? 104 * s : 0);           // no mobile a caixa e o selo ficam visíveis
+      if (i === 8) bottom = HA;                                      // destino: popup no meio da tela
       else if (i === 7) bottom = sy(BB, z8) - 6;                     // clientes: card acima das placas
-      else {
-        const z = i === 8 ? z2 : z1;
-        // no mobile o card fica acima do caminhão (e, no destino, acima da placa)
-        bottom = road(z) - (mobile ? (i === 8 ? 650 : 500) * z * s : 0);
-      }
+      else if (mobile) bottom = sy(Y - CLEAR[i], z0);                // celular: card acima das máquinas
+      else if (i < 6) bottom = belt;                                 // desktop: entre o menu e a esteira
+      else bottom = road(z1);                                        // desktop: entre o menu e a estrada
       return [topH + gap, bottom - gap];
     });
     document.documentElement.style.setProperty('--belt', `${belt}px`);
@@ -504,7 +505,7 @@
       while (p.offsetHeight > max && lvl < 4) p.classList.add(`fit-${++lvl}`);
       const h = p.offsetHeight;
       const k = h > max && !view.mobile ? Math.max(.6, max / h) : 1;
-      gsap.set(p, { scale: k });
+      gsap.set(p, { scale: k }); p._k = k;
       p.style.top = `${Math.round(t + Math.max(0, (max - h * k) / 2))}px`;
     });
   }
@@ -607,7 +608,10 @@
     // cards: um por vez. O anterior sai antes do próximo entrar, nunca ficam colados.
     sections.forEach((sec, i) => {
       const p = panels[i], T = sec.offsetTop, Hs = sec.offsetHeight;
-      if (i > 0) tl.fromTo(p, { autoAlpha: 0, y: 26 }, { autoAlpha: 1, y: 0, duration: vh * .22, ease: 'power2.out', immediateRender: false }, Math.max(0, T - vh * .34));
+      if (i === 8) {
+        const [t8, d8] = at(8, .68, .84);
+        tl.fromTo(p, { autoAlpha: 0, y: 30, scale: p._k * .94 }, { autoAlpha: 1, y: 0, scale: p._k, duration: d8, ease: 'back.out(1.4)', immediateRender: false }, t8);
+      } else if (i > 0) tl.fromTo(p, { autoAlpha: 0, y: 26 }, { autoAlpha: 1, y: 0, duration: vh * .22, ease: 'power2.out', immediateRender: false }, Math.max(0, T - vh * .34));
       if (i < sections.length - 1) tl.fromTo(p, { autoAlpha: 1, y: 0 }, { autoAlpha: 0, y: -26, duration: vh * .2, ease: 'power2.in', immediateRender: false }, T + Hs - vh * .76);
     });
 
@@ -636,8 +640,9 @@
     go(5, 0, .7, { x: 3330 }, { x: P.inTruck }, 'power1.inOut');
     go(5, .75, .9, { doors: 0 }, { doors: 1 });
     // 07 fábrica: o caminhão sai e a câmera abre
-    const [z1, z2, z8] = view.mobile ? ZOOM.mob : ZOOM.desk;
-    go(5, .7, 1, { zoom: 1, camOff: 0 }, { zoom: z1, camOff: 180 });
+    const [z0, z1, z2, z8] = view.mobile ? ZOOM.mob : ZOOM.desk;
+    S.zoom = z0;
+    go(5, .7, 1, { zoom: z0, camOff: 0 }, { zoom: z1, camOff: 180 });
     const lead = P.inTruck - P.truck;
     go(6, 0, 1, { x: P.inTruck, truck: P.truck }, { x: 5600, truck: 5600 - lead }, 'power1.in');
     // 08 clientes
