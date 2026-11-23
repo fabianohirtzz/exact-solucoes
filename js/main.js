@@ -28,7 +28,7 @@
     cub: 1900, dat: 2500, sort: 3000,
     chuteA: 3060, chuteB: 3160, incA: 3500, incB: 3740,
     truck: 3750, inTruck: 4010,
-    factory: 4900, clientsA: 6150, dest: 8650, end: 8030
+    factory: 4900, clientsA: 5950, dest: 9300, end: 8680
   };
 
   // caminho que a caixa percorre (y em função de x)
@@ -245,9 +245,9 @@
     mk('rect', { x: -3000, y: FLOOR, width: 6900, height: 600, fill: '#ebe7f4' }, ground);
     mk('rect', { x: -3000, y: FLOOR, width: 6900, height: 2, fill: 'rgba(123,79,224,.35)' }, ground);
     for (let x = -1400; x < 3860; x += 60) mk('rect', { x, y: FLOOR + 40, width: 30, height: 6, fill: 'rgba(91,47,179,.16)' }, ground);
-    mk('rect', { x: 3900, y: FLOOR, width: 6000, height: 600, fill: '#d9d3e5' }, ground);
-    mk('rect', { x: 3900, y: FLOOR, width: 6000, height: 4, fill: '#bdb4d1' }, ground);
-    for (let x = 3950; x < 9800; x += 110) mk('rect', { x, y: FLOOR + 52, width: 56, height: 6, fill: '#ffffff' }, ground);
+    mk('rect', { x: 3900, y: FLOOR, width: 7400, height: 600, fill: '#d9d3e5' }, ground);
+    mk('rect', { x: 3900, y: FLOOR, width: 7400, height: 4, fill: '#bdb4d1' }, ground);
+    for (let x = 3950; x < 11200; x += 110) mk('rect', { x, y: FLOOR + 52, width: 56, height: 6, fill: '#ffffff' }, ground);
 
     // doca do galpão (moldura listrada)
     mk('rect', { x: 3700, y: 60, width: 36, height: 580, fill: '#ffffff' }, scenery);
@@ -386,15 +386,15 @@
     mk('rect', { x: x + 860, y: -170, width: 30, height: 190, fill: '#e3dcf4' }, g);
   }
 
-  const BB = 34; // topo das placas de clientes
+  const BB = 8; // topo das placas de clientes
   function buildBillboards() {
     const logos = ['jt-express', 'rodonaves', 'saturno-brasil', 'fm-transportes', 'icaro-express',
       'r3-express', 'vestra', 'aceville', 'dulog', 'dia-e-noite'];
     logos.forEach((n, i) => {
-      const x = P.clientsA + i * 250, g = mk('g', {}, scenery);
-      mk('rect', { x: x + 106, y: 120, width: 8, height: FLOOR - 120, fill: '#b3a9c9' }, g);
-      mk('rect', { x, y: BB, width: 220, height: 86, rx: 6, fill: '#ffffff', stroke: 'rgba(123,79,224,.4)', 'stroke-width': 2 }, g);
-      mk('image', { href: `assets/img/clientes/${n}.webp`, x: x + 16, y: BB + 10, width: 188, height: 66, preserveAspectRatio: 'xMidYMid meet' }, g);
+      const x = P.clientsA + i * 320, g = mk('g', {}, scenery);
+      mk('rect', { x: x + 146, y: 120, width: 8, height: FLOOR - 120, fill: '#b3a9c9' }, g);
+      mk('rect', { x, y: BB, width: 300, height: 118, rx: 8, fill: '#ffffff', stroke: 'rgba(123,79,224,.4)', 'stroke-width': 2 }, g);
+      mk('image', { href: `assets/img/clientes/${n}.webp`, x: x + 18, y: BB + 12, width: 264, height: 94, preserveAspectRatio: 'xMidYMid meet' }, g);
     });
   }
 
@@ -455,13 +455,20 @@
 
   // Ancora a esteira perto do pé do palco e calcula, para cada card, a faixa livre:
   // etapas 1 a 6 entre o menu e a esteira; 7 a 9 entre o menu e a estrada.
+  const svhProbe = document.createElement('div');
+  svhProbe.style.cssText = 'position:fixed;top:0;left:0;width:0;height:100vh;height:100svh;visibility:hidden;pointer-events:none';
+  document.body.appendChild(svhProbe);
+
   function layout(sceneOnly = false) {
     const W = innerWidth, H = stageEl.clientHeight;
     const mobile = W <= 860 || W / innerHeight < 1;
+    // no celular a âncora usa a menor altura de tela, então a cena não pula com a barra de endereço
+    const barH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--bar-h')) || 58;
+    const HA = mobile ? Math.min(H, svhProbe.offsetHeight - barH) : H;
     const s = mobile ? W / 560 : Math.min(H / 740, W / 1100);
     view = { w: W / s, h: H / s, s, mobile };
     view.ax = view.w * (mobile ? .5 : .66);
-    view.ay = view.h - (mobile ? 12 : 22) / s - (FLOOR - Y);
+    view.ay = HA / s - (mobile ? 12 : 22) / s - (FLOOR - Y);
     svg.setAttribute('viewBox', `0 0 ${view.w} ${view.h}`);
     const belt = view.ay * s - 4;                     // topo da esteira na tela, em px
     document.documentElement.style.setProperty('--belt', `${belt}px`);
@@ -473,7 +480,7 @@
     const sy = (y, z) => (view.ay + (y - Y) * z) * s;   // altura na tela de um ponto do mundo
     bounds = panels.map((p, i) => {
       let bottom;
-      if (i < 6) bottom = belt - (mobile ? 130 * s : 0);           // no mobile a caixa e o selo ficam visíveis
+      if (i < 6) bottom = belt - (mobile ? 104 * s : 0);           // no mobile a caixa e o selo ficam visíveis
       else if (i === 7) bottom = sy(BB, z8) - 6;                     // clientes: card acima das placas
       else {
         const z = i === 8 ? z2 : z1;
@@ -496,7 +503,7 @@
       let lvl = 0;
       while (p.offsetHeight > max && lvl < 4) p.classList.add(`fit-${++lvl}`);
       const h = p.offsetHeight;
-      const k = h > max ? Math.max(.6, max / h) : 1;
+      const k = h > max && !view.mobile ? Math.max(.6, max / h) : 1;
       gsap.set(p, { scale: k });
       p.style.top = `${Math.round(t + Math.max(0, (max - h * k) / 2))}px`;
     });
@@ -943,7 +950,7 @@
 
   let rt, lastW = innerWidth;
   addEventListener('resize', () => {
-    if (view.mobile && innerWidth === lastW) { layout(true); return; } // barra de endereço do celular
+    if (view.mobile && innerWidth === lastW) return; // barra de endereço do celular: nada muda
     lastW = innerWidth;
     clearTimeout(rt);
     rt = setTimeout(() => { layout(); buildTimeline(); buildMenuAnim(); ScrollTrigger.refresh(); railProgress(); }, 150);

@@ -459,11 +459,12 @@ p { margin: 0 0 14px; color: var(--body); }
   .specs--seg strong { font-size: 14px; }
   .step--end .form__grid { grid-template-columns: 1fr 1fr; }
   .step--end .field--pick { grid-column: 1 / -1; }
+  .stage { bottom: auto; height: calc(100vh - var(--bar-h)); height: calc(100lvh - var(--bar-h)); }
   .panel, .step--end .panel { width: calc(100% - 24px); padding: 18px 18px 20px; border-radius: 20px; }
   .step--hero .panel { width: calc(100% - 24px); padding: 8px 6px 0; }
   h1 { font-size: clamp(30px, 9.4vw, 44px); margin-bottom: 12px; }
   h2 { font-size: clamp(21px, 6vw, 28px); margin-bottom: 10px; }
-  p { font-size: 14px; line-height: 1.5; margin-bottom: 10px; }
+  p { font-size: 15px; line-height: 1.5; margin-bottom: 10px; }
   .lead { font-size: 15px; }
   .eyebrow { margin-bottom: 10px; font-size: 12px; }
   .eyebrow span { font-size: 11px; padding: 4px 9px; }
@@ -476,10 +477,21 @@ p { margin: 0 0 14px; color: var(--body); }
   .case { grid-template-columns: 1fr; }
   .specs { margin-top: 10px; gap: 4px; }
   .specs li { padding: 8px 11px; border-radius: 10px; }
-  .specs strong { font-size: 14px; }
-  .specs span { font-size: 12px; }
+  .specs strong { font-size: 15px; }
+  .specs span { font-size: 13px; line-height: 1.4; }
   .specs--3 li, .specs--list li { grid-template-columns: 100px 1fr; gap: 8px; }
-  .code { font-size: 11px; padding: 10px 12px; margin-top: 10px; }
+  .code { font-size: 12px; padding: 10px 12px; margin-top: 10px; }
+  /* níveis de encaixe no celular: o texto não diminui, o conteúdo secundário sai */
+  .panel.fit-3 p { font-size: 15px; }
+  .panel.fit-3 .specs span { font-size: 13px; }
+  .panel.fit-1 .opt, .panel.fit-1 .note { display: none; }
+  .panel.fit-2 .specs span { display: none; }
+  .panel.fit-2 .specs { grid-template-columns: 1fr 1fr; }
+  .panel.fit-2 .specs--3 li, .panel.fit-2 .specs--list li { display: block; }
+  .panel.fit-3 .code { display: none; }
+  .panel.fit-3 .stats dd { display: none; }
+  .panel.fit-4 .actions { margin: 10px 0; }
+  .panel.fit-4 .specs--seg { display: none; }
   .clients { grid-template-columns: repeat(5, 1fr); gap: 4px; margin: 10px 0; }
   .clients li { height: 38px; padding: 5px; border-radius: 8px; }
   .form__grid { gap: 6px; }
