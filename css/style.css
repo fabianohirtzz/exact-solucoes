@@ -278,7 +278,7 @@ p { margin: 0 0 14px; color: var(--body); }
 
 /* ---------- WhatsApp flutuante, acima da faixa ---------- */
 .wa {
-  position: fixed; z-index: 36; right: var(--gutter); bottom: calc(var(--bar-h) + 18px);
+  position: fixed; z-index: 36; right: 24px; bottom: calc(var(--bar-h) + 18px);
   display: flex; align-items: center; gap: 12px; text-decoration: none;
   transition: bottom .45s cubic-bezier(.2, .7, .2, 1);
 }
@@ -329,7 +329,6 @@ p { margin: 0 0 14px; color: var(--body); }
 }
 .foot__belts { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .foot__in { position: relative; width: 100%; padding: calc(var(--top-h) + 40px) var(--gutter) 36px; display: flex; flex-direction: column; gap: 56px; }
-.foot__head img { width: 150px; height: auto; margin-bottom: 28px; }
 .foot__claim { margin: 0; max-width: 14ch; font: 800 clamp(40px, min(7vw, 10.5vh), 104px)/.98 var(--f-display); letter-spacing: -.04em; color: #fff; }
 .foot__cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; margin-top: auto; }
 .foot h3 { margin: 0 0 14px; font: 600 14px/1 var(--f-display); color: var(--lilac); }
@@ -438,7 +437,7 @@ p { margin: 0 0 14px; color: var(--body); }
   .bar__cue { font-size: 12px; gap: 8px; }
   .bar__more { display: none; }
   .bar__mouse { width: 16px; height: 24px; }
-  .wa { bottom: calc(var(--bar-h) + 12px); }
+  .wa { right: 14px; bottom: calc(var(--bar-h) + 12px); }
   .wa__btn { width: 52px; height: 52px; }
   .wa__tip { display: none; }
   .modal { padding: 24px 18px 20px; }

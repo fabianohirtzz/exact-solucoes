@@ -666,6 +666,12 @@
   menuBtn.addEventListener('click', () => setMenu(!menu.classList.contains('is-open')));
   document.addEventListener('click', e => { if (!menu.contains(e.target)) setMenu(false); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
+  // Início e logo: volta ao topo e recarrega para a abertura do caminhão rodar de novo
+  document.querySelectorAll('[data-home]').forEach(a => a.addEventListener('click', e => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    location.reload();
+  }));
   document.querySelectorAll('[data-go]').forEach(a => a.addEventListener('click', e => {
     e.preventDefault(); setMenu(false); goTo(+a.dataset.go);
   }));
