@@ -670,7 +670,7 @@
     e.preventDefault(); setMenu(false); goTo(+a.dataset.go);
   }));
 
-  /* ---------------- formulários e popup de orçamento ---------------- */
+  /* ---------------- formulários e popup de pedido de projeto ---------------- */
   // Protótipo: sem destino configurado o envio só mostra a confirmação.
   // Para enviar de verdade, preencher data-endpoint no <form> (Formspree, Web3Forms ou API do cliente).
   const tpl = document.getElementById('tpl-form');
@@ -705,6 +705,14 @@
       fitPanels();
     });
   });
+
+  // botões: rótulo que rola no hover
+  const rollLabels = () => document.querySelectorAll('.btn').forEach(b => {
+    if (b.querySelector('.btn__roll')) return;
+    const t = b.textContent.trim();
+    b.innerHTML = `<span class="btn__roll" data-t="${t}"><span>${t}</span></span>`;
+  });
+  rollLabels();
 
   const dlg = document.getElementById('orcamento');
   const openQuote = () => { setMenu(false); dlg.showModal(); document.documentElement.classList.add('is-locked'); };
