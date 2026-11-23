@@ -15,8 +15,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/pages.css">
 </head>
-<body>
+<body data-page="home">
   <a class="skip" href="#conteudo">Pular para o conteúdo</a>
 
   <header class="top">
@@ -28,10 +29,10 @@
       <ul class="menu__list" id="menu-list">
         <li class="menu__pill" aria-hidden="true"></li>
         <li><a href="./" data-home>Início</a></li>
-        <li><a href="#transporte" data-go="1">Soluções</a></li>
-        <li><a href="#fabrica" data-go="6">Serviços</a></li>
-        <li><a href="#clientes" data-go="7">Clientes</a></li>
-        <li><a href="#destino" data-go="8">Contato</a></li>
+        <li><a href="solucoes.html">Soluções</a></li>
+        <li><a href="servicos.html">Serviços</a></li>
+        <li><a href="clientes.html">Clientes</a></li>
+        <li><a href="contato.html">Contato</a></li>
       </ul>
     </nav>
     <button class="btn btn--sm top__quote" type="button" data-quote>Solicitar projeto</button>
@@ -41,10 +42,10 @@
   <div class="sheet" id="menu-sheet" aria-hidden="true" inert>
     <nav class="sheet__nav" aria-label="Páginas">
       <a href="./" data-home>Início</a>
-      <a href="#transporte" data-go="1">Soluções</a>
-      <a href="#fabrica" data-go="6">Serviços</a>
-      <a href="#clientes" data-go="7">Clientes</a>
-      <a href="#destino" data-go="8">Contato</a>
+      <a href="solucoes.html">Soluções</a>
+      <a href="servicos.html">Serviços</a>
+      <a href="clientes.html">Clientes</a>
+      <a href="contato.html">Contato</a>
     </nav>
     <div class="sheet__foot">
       <button class="btn" type="button" data-quote>Solicitar projeto</button>
@@ -132,6 +133,7 @@
           <img src="assets/img/lona-linha.webp" alt="Linha de transportadores de lona com estrutura vermelha" loading="lazy">
           <img src="assets/img/modular-picking.webp" alt="Transportador modular de roletes em corredor de picking" loading="lazy">
         </div>
+        <a class="more" href="solucoes.html#transportadores">Conhecer os transportadores</a>
       </div>
     </section>
 
@@ -150,6 +152,7 @@
           <img src="assets/img/cubagem-laser.webp" alt="Projeto da cubagem dinâmica Advanced Laser sobre transportadores" loading="lazy">
           <img src="assets/img/smartcubo.webp" alt="SmartCubo Standard, cubagem estática com balança" loading="lazy">
         </div>
+        <a class="more" href="solucoes.html#cubagem">Ver a ficha técnica completa</a>
       </div>
     </section>
 
@@ -167,6 +170,7 @@
   <i>"rota"</i>: "SC-02",
   <i>"status"</i>: <b>"cubado"</b>
 }</code></pre>
+        <a class="more" href="solucoes.html#integracao">Como funciona a integração</a>
       </div>
     </section>
 
@@ -179,6 +183,7 @@
           <img src="assets/img/sorter-pneumatico.webp" alt="Sorter pneumático com desviadores amarelos" loading="lazy">
           <img src="assets/img/sorter-modular.webp" alt="Projeto de sorter modular com saídas em rampa" loading="lazy">
         </div>
+        <a class="more" href="solucoes.html#sorters">Conhecer os sorters</a>
       </div>
     </section>
 
@@ -191,6 +196,7 @@
           <img src="assets/img/carregamento.webp" alt="Projeto de transportador de carga entrando em carreta" loading="lazy">
           <img src="assets/img/rampa.webp" alt="Rampa de carga e descarga amarela" loading="lazy">
         </div>
+        <a class="more" href="solucoes.html#carga">Carga e descarga em detalhe</a>
       </div>
     </section>
 
@@ -209,6 +215,7 @@
           <img src="assets/img/roletes-fabricacao.webp" alt="Roletes galvanizados fabricados na fábrica" loading="lazy">
           <img src="assets/img/solda.webp" alt="Soldador trabalhando em estrutura metálica" loading="lazy">
         </div>
+        <a class="more" href="servicos.html">Ver todos os serviços</a>
       </div>
     </section>
 
@@ -223,6 +230,7 @@
           <li><strong>Centros de distribuição</strong><span>Linhas completas, do caminhão que chega ao caminhão que sai.</span></li>
         </ul>
         <p class="note opt">As marcas na estrada são algumas das empresas que já operam com a Exact.</p>
+        <a class="more" href="clientes.html">Ver clientes e cases</a>
       </div>
     </section>
 
@@ -259,10 +267,10 @@
           <h3>Navegue</h3>
           <ul>
             <li><a href="./" data-home>Início</a></li>
-            <li><a href="#transporte" data-go="1">Soluções</a></li>
-            <li><a href="#fabrica" data-go="6">Serviços</a></li>
-            <li><a href="#clientes" data-go="7">Clientes</a></li>
-            <li><a href="#destino" data-go="8">Contato</a></li>
+            <li><a href="solucoes.html">Soluções</a></li>
+            <li><a href="servicos.html">Serviços</a></li>
+            <li><a href="clientes.html">Clientes</a></li>
+            <li><a href="contato.html">Contato</a></li>
           </ul>
         </div>
       </div>
@@ -330,6 +338,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script src="js/ui.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>
