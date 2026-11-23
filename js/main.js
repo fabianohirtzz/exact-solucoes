@@ -82,7 +82,7 @@
         const rg = mk('g', {}, g);
         mk('circle', { cx: r, cy: 6, r: 8, fill: C.steel }, rg);
         mk('rect', { x: r - 7, y: 5, width: 14, height: 2, fill: '#a39bb8' }, rg);
-        rollers.push({ el: rg, cx: r, cy: 6 });
+        rollers.push({ el: rg, cx: r, cy: 6, wx: x1 + r * Math.cos(ang * Math.PI / 180) });
       }
     } else {
       mk('rect', { x: 0, y: 0, width: len, height: 12, fill: type === 'mod' ? 'url(#pMod)' : 'url(#pBelt)' }, g);
@@ -386,14 +386,15 @@
     mk('rect', { x: x + 860, y: -170, width: 30, height: 190, fill: '#e3dcf4' }, g);
   }
 
+  const BB = 34; // topo das placas de clientes
   function buildBillboards() {
     const logos = ['jt-express', 'rodonaves', 'saturno-brasil', 'fm-transportes', 'icaro-express',
       'r3-express', 'vestra', 'aceville', 'dulog', 'dia-e-noite'];
     logos.forEach((n, i) => {
       const x = P.clientsA + i * 250, g = mk('g', {}, scenery);
-      mk('rect', { x: x + 106, y: -10, width: 8, height: FLOOR + 10, fill: '#b3a9c9' }, g);
-      mk('rect', { x, y: -96, width: 220, height: 86, rx: 6, fill: '#ffffff', stroke: 'rgba(123,79,224,.4)', 'stroke-width': 2 }, g);
-      mk('image', { href: `assets/img/clientes/${n}.webp`, x: x + 16, y: -86, width: 188, height: 66, preserveAspectRatio: 'xMidYMid meet' }, g);
+      mk('rect', { x: x + 106, y: 120, width: 8, height: FLOOR - 120, fill: '#b3a9c9' }, g);
+      mk('rect', { x, y: BB, width: 220, height: 86, rx: 6, fill: '#ffffff', stroke: 'rgba(123,79,224,.4)', 'stroke-width': 2 }, g);
+      mk('image', { href: `assets/img/clientes/${n}.webp`, x: x + 16, y: BB + 10, width: 188, height: 66, preserveAspectRatio: 'xMidYMid meet' }, g);
     });
   }
 
@@ -449,12 +450,12 @@
   let panelMax = 520;
 
   // Ancora a esteira perto do pé do palco e mede quanto espaço sobra acima dela para os cards.
-  const ZOOM = { desk: [.72, .62], mob: [.62, .52] };  // zoom da câmera nas etapas 7-8 e no destino
+  const ZOOM = { desk: [.72, .62, .45], mob: [.62, .52, .44] };  // etapa 7, destino e clientes
   let bounds = [];
 
   // Ancora a esteira perto do pé do palco e calcula, para cada card, a faixa livre:
   // etapas 1 a 6 entre o menu e a esteira; 7 a 9 entre o menu e a estrada.
-  function layout() {
+  function layout(sceneOnly = false) {
     const W = innerWidth, H = stageEl.clientHeight;
     const mobile = W <= 860 || W / innerHeight < 1;
     const s = mobile ? W / 560 : Math.min(H / 740, W / 1100);
@@ -463,13 +464,17 @@
     view.ay = view.h - (mobile ? 12 : 22) / s - (FLOOR - Y);
     svg.setAttribute('viewBox', `0 0 ${view.w} ${view.h}`);
     const belt = view.ay * s - 4;                     // topo da esteira na tela, em px
+    document.documentElement.style.setProperty('--belt', `${belt}px`);
+    if (sceneOnly) return;
     const road = z => (view.ay + (FLOOR - Y) * z) * s - 4;
     const topH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--top-h')) || 74;
     const gap = mobile ? 10 : 18;
-    const [z1, z2] = mobile ? ZOOM.mob : ZOOM.desk;
+    const [z1, z2, z8] = mobile ? ZOOM.mob : ZOOM.desk;
+    const sy = (y, z) => (view.ay + (y - Y) * z) * s;   // altura na tela de um ponto do mundo
     bounds = panels.map((p, i) => {
       let bottom;
       if (i < 6) bottom = belt - (mobile ? 130 * s : 0);           // no mobile a caixa e o selo ficam visíveis
+      else if (i === 7) bottom = sy(BB, z8) - 6;                     // clientes: card acima das placas
       else {
         const z = i === 8 ? z2 : z1;
         // no mobile o card fica acima do caminhão (e, no destino, acima da placa)
@@ -498,7 +503,12 @@
   }
 
   let lastRead = '';
+  // só redesenha quando algo mudou (no celular, quadro parado custa zero)
+  let lastKey = '';
   function render() {
+    const frameKey = Object.values(S).map(v => (+v).toFixed(2)).join() + view.w + view.ay;
+    if (frameKey === lastKey) return;
+    lastKey = frameKey;
     const x = S.x, y = pathY(x);
     const slope = (pathY(x + 2) - pathY(x - 2)) / 4;
     const ang = Math.atan(slope) * 57.3;
@@ -514,7 +524,8 @@
     L('pBelt').setAttribute('patternTransform', belt);
     L('pMod').setAttribute('patternTransform', `translate(${(x % 16).toFixed(2)},0)`);
     const rot = (x / 8) * 57.3;
-    for (const r of rollers) r.el.setAttribute('transform', `rotate(${rot.toFixed(1)} ${r.cx} ${r.cy})`);
+    const half = view.w / S.zoom, cx0 = x + S.camOff;            // gira só os roletes na tela
+    for (const r of rollers) if (Math.abs(r.wx - cx0) < half) r.el.setAttribute('transform', `rotate(${rot.toFixed(1)} ${r.cx} ${r.cy})`);
 
     // caminhão de expedição
     const tr = S.truck;
@@ -618,14 +629,15 @@
     go(5, 0, .7, { x: 3330 }, { x: P.inTruck }, 'power1.inOut');
     go(5, .75, .9, { doors: 0 }, { doors: 1 });
     // 07 fábrica: o caminhão sai e a câmera abre
-    const [z1, z2] = view.mobile ? ZOOM.mob : ZOOM.desk;
+    const [z1, z2, z8] = view.mobile ? ZOOM.mob : ZOOM.desk;
     go(5, .7, 1, { zoom: 1, camOff: 0 }, { zoom: z1, camOff: 180 });
     const lead = P.inTruck - P.truck;
     go(6, 0, 1, { x: P.inTruck, truck: P.truck }, { x: 5600, truck: 5600 - lead }, 'power1.in');
     // 08 clientes
+    go(7, 0, .35, { zoom: z1 }, { zoom: z8 });
     go(7, 0, 1, { x: 5600, truck: 5600 - lead }, { x: 7300, truck: 7300 - lead });
     // 09 destino
-    go(8, 0, .6, { camOff: 180, zoom: z1 }, { camOff: view.mobile ? 860 : 640, zoom: z2 }, 'power1.inOut');
+    go(8, 0, .6, { camOff: 180, zoom: z8 }, { camOff: view.mobile ? 860 : 640, zoom: z2 }, 'power1.inOut');
     go(8, 0, .6, { x: 7300, truck: 7300 - lead }, { x: P.end, truck: P.end - lead }, 'power2.out');
     go(8, .6, .7, { done: 0 }, { done: 1 });
     tl.set({}, {}, max); // duração da timeline = pixels de scroll
@@ -705,9 +717,16 @@
 
   // menu de páginas
   const menu = document.querySelector('.menu'), menuBtn = menu.querySelector('.menu__toggle');
-  const setMenu = open => { menu.classList.toggle('is-open', open); menuBtn.setAttribute('aria-expanded', open); };
+  const sheet = document.getElementById('menu-sheet');
+  const setMenu = open => {
+    if (open === menu.classList.contains('is-open')) return;
+    menu.classList.toggle('is-open', open); sheet.classList.toggle('is-open', open);
+    menuBtn.setAttribute('aria-expanded', open); menuBtn.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+    sheet.setAttribute('aria-hidden', !open); sheet.inert = !open;
+    document.documentElement.classList.toggle('is-locked', open);
+  };
   menuBtn.addEventListener('click', () => setMenu(!menu.classList.contains('is-open')));
-  document.addEventListener('click', e => { if (!menu.contains(e.target)) setMenu(false); });
+  sheet.addEventListener('click', e => { if (e.target.closest('a, button')) setMenu(false); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
   // hover das páginas no menu: a pílula desliza até o link
   const list = document.querySelector('.menu__list'), pill = list.querySelector('.menu__pill');
@@ -794,13 +813,14 @@
 
   /* ---------------- inicialização ---------------- */
   gsap.registerPlugin(ScrollTrigger);
+  ScrollTrigger.config({ ignoreMobileResize: true });
   buildParallax();
   buildWorld();
   layout();
 
   gsap.set(panels.slice(1), { autoAlpha: 0 });
   if (scrollY < 20 && !reduce) {
-    S.x = -420;
+    S.x = view.mobile ? -660 : -420;
     gsap.set(panels[0], { autoAlpha: 0 });
     // abertura: o caminhão descarrega, a caixa desce a rampa e só então o título aparece
     intro = gsap.timeline({ delay: .3 })
@@ -921,9 +941,11 @@
 
   document.fonts?.ready.then(() => { fitPanels(); ScrollTrigger.refresh(); });
 
-  let rt;
+  let rt, lastW = innerWidth;
   addEventListener('resize', () => {
+    if (view.mobile && innerWidth === lastW) { layout(true); return; } // barra de endereço do celular
+    lastW = innerWidth;
     clearTimeout(rt);
-    rt = setTimeout(() => { layout(); buildTimeline(); buildMenuAnim(); ScrollTrigger.refresh(); }, 150);
+    rt = setTimeout(() => { layout(); buildTimeline(); buildMenuAnim(); ScrollTrigger.refresh(); railProgress(); }, 150);
   });
 })();

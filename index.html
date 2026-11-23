@@ -24,7 +24,7 @@
       <img src="assets/img/logo-exact.png" alt="Exact Soluções" width="150" height="49">
     </a>
     <nav class="menu" aria-label="Menu principal">
-      <button class="menu__toggle" type="button" aria-expanded="false" aria-controls="menu-list"><span class="menu__icon" aria-hidden="true"></span>Menu</button>
+      <button class="menu__toggle" type="button" aria-expanded="false" aria-controls="menu-sheet"><span class="menu__icon" aria-hidden="true"></span>Menu</button>
       <ul class="menu__list" id="menu-list">
         <li class="menu__pill" aria-hidden="true"></li>
         <li><a href="./" data-home>Início</a></li>
@@ -36,6 +36,24 @@
     </nav>
     <button class="btn btn--sm top__quote" type="button" data-quote>Solicitar projeto</button>
   </header>
+
+  <!-- Menu em tela cheia (mobile e telas médias) -->
+  <div class="sheet" id="menu-sheet" aria-hidden="true" inert>
+    <nav class="sheet__nav" aria-label="Páginas">
+      <a href="./" data-home>Início</a>
+      <a href="#transporte" data-go="1">Soluções</a>
+      <a href="#fabrica" data-go="6">Serviços</a>
+      <a href="#clientes" data-go="7">Clientes</a>
+      <a href="#destino" data-go="8">Contato</a>
+    </nav>
+    <div class="sheet__foot">
+      <button class="btn" type="button" data-quote>Solicitar projeto</button>
+      <div class="social">
+        <a class="social__btn" href="https://wa.me/message/T6ADM7QQDJP3N1" target="_blank" rel="noopener" aria-label="WhatsApp da Exact"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 2.8a9.2 9.2 0 0 0-7.9 13.9L2.8 21.2l4.6-1.2A9.2 9.2 0 1 0 12 2.8Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.6 7.6c-.5.4-.9 1.1-.8 2 .3 3 3.4 6.2 6.5 6.6.9.1 1.6-.3 2-.8l.4-.8c.1-.3 0-.6-.3-.7l-1.9-.9c-.3-.1-.6 0-.7.2l-.6.8c-1.4-.6-2.5-1.7-3.1-3.1l.8-.6c.2-.2.3-.5.2-.7l-.9-1.9c-.1-.3-.4-.4-.7-.3Z" fill="currentColor"/></svg></a>
+        <a class="social__btn" href="https://www.instagram.com/solucoesexact/" target="_blank" rel="noopener" aria-label="Instagram @solucoesexact"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.3" cy="6.7" r="1.2" fill="currentColor"/></svg></a>
+      </div>
+    </div>
+  </div>
 
   <!-- Palco fixo: a linha de produção inteira, desenhada pelo js/main.js -->
   <div class="stage" aria-hidden="true">
@@ -194,17 +212,17 @@
       </div>
     </section>
 
-    <section class="step" id="clientes" data-label="Clientes">
+    <section class="step step--wide" id="clientes" data-label="Clientes">
       <div class="panel">
         <p class="eyebrow"><span>Etapa 8</span>Quem já roda com a Exact</p>
         <h2>Operações que não podem parar.</h2>
         <p>Transportadoras, operadores de e-commerce e centros de distribuição que movimentam milhares de volumes por dia.</p>
-        <ul class="specs specs--list">
+        <ul class="specs specs--seg">
           <li><strong>Transportadoras</strong><span>Recebimento, triagem por rota e carregamento direto nas docas.</span></li>
           <li><strong>E-commerce</strong><span>Picking, cubagem para o cálculo do frete e expedição no mesmo fluxo.</span></li>
           <li><strong>Centros de distribuição</strong><span>Linhas completas, do caminhão que chega ao caminhão que sai.</span></li>
         </ul>
-        <p class="note">As marcas na estrada ao lado são algumas das empresas que já operam com a Exact.</p>
+        <p class="note opt">As marcas na estrada são algumas das empresas que já operam com a Exact.</p>
       </div>
     </section>
 
@@ -222,7 +240,7 @@
     <canvas class="foot__belts" aria-hidden="true"></canvas>
     <div class="foot__in">
       <div class="foot__head">
-        <p class="foot__claim">Automatizando o universo logístico.</p>
+        <p class="foot__claim"><span>Automatizando</span> <span>o universo</span> <span>logístico.</span></p>
       </div>
       <div class="foot__cols">
         <div>
