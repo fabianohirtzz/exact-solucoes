@@ -449,6 +449,11 @@
   let panelMax = 520;
 
   // Ancora a esteira perto do pé do palco e mede quanto espaço sobra acima dela para os cards.
+  const ZOOM = { desk: [.72, .62], mob: [.62, .52] };  // zoom da câmera nas etapas 7-8 e no destino
+  let bounds = [];
+
+  // Ancora a esteira perto do pé do palco e calcula, para cada card, a faixa livre:
+  // etapas 1 a 6 entre o menu e a esteira; 7 a 9 entre o menu e a estrada.
   function layout() {
     const W = innerWidth, H = stageEl.clientHeight;
     const mobile = W <= 860 || W / innerHeight < 1;
@@ -458,22 +463,37 @@
     view.ay = view.h - (mobile ? 12 : 22) / s - (FLOOR - Y);
     svg.setAttribute('viewBox', `0 0 ${view.w} ${view.h}`);
     const belt = view.ay * s - 4;                     // topo da esteira na tela, em px
-    const top = parseFloat(getComputedStyle(panels[0]).top) || 96;
-    const clear = mobile ? 130 * s : 0;               // no mobile a caixa e o selo ficam visíveis
-    panelMax = belt - clear - top - (mobile ? 8 : 18);
+    const road = z => (view.ay + (FLOOR - Y) * z) * s - 4;
+    const topH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--top-h')) || 74;
+    const gap = mobile ? 10 : 18;
+    const [z1, z2] = mobile ? ZOOM.mob : ZOOM.desk;
+    bounds = panels.map((p, i) => {
+      let bottom;
+      if (i < 6) bottom = belt - (mobile ? 130 * s : 0);           // no mobile a caixa e o selo ficam visíveis
+      else {
+        const z = i === 8 ? z2 : z1;
+        // no mobile o card fica acima do caminhão (e, no destino, acima da placa)
+        bottom = road(z) - (mobile ? (i === 8 ? 650 : 500) * z * s : 0);
+      }
+      return [topH + gap, bottom - gap];
+    });
     document.documentElement.style.setProperty('--belt', `${belt}px`);
     fitPanels();
   }
 
-  // Nenhum card pode passar da esteira: reduz por níveis e, se ainda faltar, escala.
+  // Nenhum card passa da esteira ou da estrada: reduz por níveis, escala se preciso e centraliza na faixa livre.
   function fitPanels() {
-    panels.forEach(p => {
+    panels.forEach((p, i) => {
+      const [t, b] = bounds[i] || [96, 600];
+      const max = b - t;
       p.classList.remove('fit-1', 'fit-2', 'fit-3', 'fit-4');
       gsap.set(p, { scale: 1 });
       let lvl = 0;
-      while (p.offsetHeight > panelMax && lvl < 4) p.classList.add(`fit-${++lvl}`);
+      while (p.offsetHeight > max && lvl < 4) p.classList.add(`fit-${++lvl}`);
       const h = p.offsetHeight;
-      gsap.set(p, { scale: h > panelMax ? Math.max(.6, panelMax / h) : 1 });
+      const k = h > max ? Math.max(.6, max / h) : 1;
+      gsap.set(p, { scale: k });
+      p.style.top = `${Math.round(t + Math.max(0, (max - h * k) / 2))}px`;
     });
   }
 
@@ -598,7 +618,7 @@
     go(5, 0, .7, { x: 3330 }, { x: P.inTruck }, 'power1.inOut');
     go(5, .75, .9, { doors: 0 }, { doors: 1 });
     // 07 fábrica: o caminhão sai e a câmera abre
-    const z1 = view.mobile ? .62 : .72, z2 = view.mobile ? .52 : .62;
+    const [z1, z2] = view.mobile ? ZOOM.mob : ZOOM.desk;
     go(5, .7, 1, { zoom: 1, camOff: 0 }, { zoom: z1, camOff: 180 });
     const lead = P.inTruck - P.truck;
     go(6, 0, 1, { x: P.inTruck, truck: P.truck }, { x: 5600, truck: 5600 - lead }, 'power1.in');
@@ -621,6 +641,29 @@
         railProgress();
       }
     });
+  }
+
+  /* ---------------- menu que se desprende do topo ---------------- */
+  const topEl = document.querySelector('.top');
+  let menuST;
+  function buildMenuAnim() {
+    if (menuST) { menuST.kill(); menuST = null; }
+    gsap.set(topEl, { clearProps: 'all' });
+    if (reduce) return;
+    const cs = getComputedStyle(topEl), W = innerWidth, hgt = parseFloat(cs.height);
+    const gut = view.mobile ? 14 : Math.max(24, (W - 1180) / 2);
+    const end = {
+      top: cs.top, width: cs.width, height: hgt, borderRadius: hgt / 2,
+      backgroundColor: cs.backgroundColor, boxShadow: cs.boxShadow, borderColor: cs.borderTopColor,
+      paddingLeft: cs.paddingLeft, paddingRight: cs.paddingRight, '--mb': '14px', '--ms': 1.4
+    };
+    const from = {
+      top: 0, width: W, height: hgt + (view.mobile ? 8 : 20), borderRadius: 0,
+      backgroundColor: 'rgba(255, 255, 255, 0)', boxShadow: cs.boxShadow.replace(/rgba\(([^)]*),\s*[\d.]+\)/, 'rgba($1, 0)'),
+      borderColor: 'rgba(255, 255, 255, 0)', paddingLeft: gut, paddingRight: view.mobile ? gut - 8 : gut, '--mb': '0px', '--ms': 1
+    };
+    const tw = gsap.fromTo(topEl, from, { ...end, ease: 'none', immediateRender: true });
+    menuST = ScrollTrigger.create({ start: 0, end: () => innerHeight * .55, scrub: .4, animation: tw });
   }
 
   /* ---------------- navegação ---------------- */
@@ -666,6 +709,25 @@
   menuBtn.addEventListener('click', () => setMenu(!menu.classList.contains('is-open')));
   document.addEventListener('click', e => { if (!menu.contains(e.target)) setMenu(false); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
+  // hover das páginas no menu: a pílula desliza até o link
+  const list = document.querySelector('.menu__list'), pill = list.querySelector('.menu__pill');
+  let pillOn = false;
+  const wide = () => !matchMedia('(max-width: 1180px)').matches;
+  list.querySelectorAll('a').forEach(a => a.addEventListener('mouseenter', () => {
+    if (!wide()) return;
+    const x = a.offsetLeft, w = a.offsetWidth;
+    if (!pillOn) {
+      gsap.set(pill, { x, width: w });
+      gsap.fromTo(pill, { opacity: 0, scaleX: .5 }, { opacity: 1, scaleX: 1, duration: .35, ease: 'back.out(2)' });
+      pillOn = true;
+    } else gsap.to(pill, { x, width: w, duration: reduce ? 0 : .45, ease: 'power3.out' });
+  }));
+  list.addEventListener('mouseleave', () => {
+    if (!pillOn) return;
+    pillOn = false;
+    gsap.to(pill, { opacity: 0, scaleX: .7, duration: .25, ease: 'power2.in' });
+  });
+
   // Início e logo: volta ao topo e recarrega para a abertura do caminhão rodar de novo
   document.querySelectorAll('[data-home]').forEach(a => a.addEventListener('click', e => {
     e.preventDefault();
@@ -749,6 +811,7 @@
     gsap.set(panels[0], { autoAlpha: 1 });
   }
   buildTimeline();
+  buildMenuAnim();
   gsap.ticker.add(render);
   railProgress();
 
@@ -861,6 +924,6 @@
   let rt;
   addEventListener('resize', () => {
     clearTimeout(rt);
-    rt = setTimeout(() => { layout(); buildTimeline(); ScrollTrigger.refresh(); }, 150);
+    rt = setTimeout(() => { layout(); buildTimeline(); buildMenuAnim(); ScrollTrigger.refresh(); }, 150);
   });
 })();
