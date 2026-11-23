@@ -241,10 +241,10 @@
 
   /* ---------------- o mundo ---------------- */
   function buildWorld() {
-    // chão do galpão e depois estrada
-    mk('rect', { x: -3000, y: FLOOR, width: 6900, height: 600, fill: '#ebe7f4' }, ground);
+    // galpão: só a linha do piso. Abaixo dela fica o fundo do site, então quando a barra
+    // do navegador do celular recolhe e revela mais tela, nada parece se mexer.
     mk('rect', { x: -3000, y: FLOOR, width: 6900, height: 2, fill: 'rgba(123,79,224,.35)' }, ground);
-    for (let x = -1400; x < 3860; x += 60) mk('rect', { x, y: FLOOR + 40, width: 30, height: 6, fill: 'rgba(91,47,179,.16)' }, ground);
+    // estrada: só existe depois da doca, onde o caminhão sai
     mk('rect', { x: 3900, y: FLOOR, width: 7400, height: 600, fill: '#d9d3e5' }, ground);
     mk('rect', { x: 3900, y: FLOOR, width: 7400, height: 4, fill: '#bdb4d1' }, ground);
     for (let x = 3950; x < 11200; x += 110) mk('rect', { x, y: FLOOR + 52, width: 56, height: 6, fill: '#ffffff' }, ground);
