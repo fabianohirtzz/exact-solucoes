@@ -27,7 +27,16 @@
       <div class="rail__line"><span class="rail__fill"></span><ol class="rail__steps"></ol><span class="rail__box"></span></div>
       <p class="rail__now"><span class="rail__num">01</span><span class="rail__label">Recebimento</span></p>
     </nav>
-    <a class="btn btn--sm" href="https://wa.me/message/T6ADM7QQDJP3N1" target="_blank" rel="noopener">Orçamento</a>
+    <nav class="menu" aria-label="Menu principal">
+      <button class="menu__toggle" type="button" aria-expanded="false" aria-controls="menu-list"><span class="menu__icon" aria-hidden="true"></span>Menu</button>
+      <ul class="menu__list" id="menu-list">
+        <li><a href="#transporte" data-go="1">Soluções</a></li>
+        <li><a href="#fabrica" data-go="6">Serviços</a></li>
+        <li><a href="#clientes" data-go="7">Clientes</a></li>
+        <li><a href="#destino" data-go="8">Contato</a></li>
+        <li class="menu__cta"><button class="btn" type="button" data-quote>Pedir orçamento</button></li>
+      </ul>
+    </nav>
   </header>
 
   <!-- Palco fixo: a linha de produção inteira, desenhada pelo js/main.js -->
@@ -82,8 +91,8 @@
         <h1>Pensar fora da caixa. Automatizar dentro dela.</h1>
         <p class="lead">A Exact projeta e fabrica as máquinas que movem, medem e separam cada volume do seu centro de distribuição. Do caminhão que chega ao caminhão que sai.</p>
         <div class="actions">
-          <a class="btn" href="https://wa.me/message/T6ADM7QQDJP3N1" target="_blank" rel="noopener">Falar com um especialista</a>
-          <a class="btn btn--ghost" href="#transporte">Seguir a caixa</a>
+          <button class="btn" type="button" data-quote>Pedir orçamento</button>
+          <a class="btn btn--ghost" href="#transporte" data-go="1">Seguir a caixa</a>
         </div>
         <dl class="stats">
           <div><dt>até 2.200</dt><dd>volumes por hora na cubagem dinâmica</dd></div>
@@ -91,18 +100,17 @@
           <div><dt>Rodeio/SC</dt><dd>projeto e fabricação</dd></div>
         </dl>
       </div>
-      <p class="cue">Role a página para ligar a esteira</p>
     </section>
 
     <section class="step" id="transporte" data-label="Transporte">
       <div class="panel">
         <p class="eyebrow"><span>Etapa 2</span>Transporte e movimentação</p>
         <h2>Lona, roletes ou modular. A esteira certa para cada carga.</h2>
-        <p>Estrutura em aço carbono com pintura eletrostática, motorredutores WEG e cordão de emergência em toda a lateral. Cada linha é dimensionada para o produto, o layout e o ritmo da sua operação.</p>
+        <p class="opt">Estrutura em aço carbono com pintura eletrostática, motorredutores WEG e cordão de emergência em toda a lateral. Cada linha é dimensionada para o produto, o layout e o ritmo da sua operação.</p>
         <ul class="specs specs--3">
           <li><strong>Lona</strong><span>25 a 1.200 mm de largura. Aceita aclive, declive e curvas. Triagem, carga e objetos pesados.</span></li>
           <li><strong>Roletes</strong><span>50 a 1.300 mm, ajuste de 1 em 1 mm. Manutenção baixa e comprimento livre.</span></li>
-          <li><strong>Modular</strong><span>Linhas longas de picking, carga e descarga em CDs de e-commerce.</span></li>
+          <li><strong>Modular</strong><span>Esteira plástica Ibraflex, parceira premium. Curvas contínuas, picking, carga e descarga.</span></li>
         </ul>
         <div class="shots">
           <img src="assets/img/lona-linha.webp" alt="Linha de transportadores de lona com estrutura vermelha" loading="lazy">
@@ -115,7 +123,7 @@
       <div class="panel">
         <p class="eyebrow"><span>Etapa 3</span>Cubagem dinâmica Advanced Laser</p>
         <h2>Mediu, pesou e leu. Sem parar a linha.</h2>
-        <p>O dimensionador a laser mede volumes irregulares em movimento, a balança pesa e a leitora captura o código de barras automaticamente. Para bancadas, a SmartCubo Standard faz o mesmo de forma estática, com balança homologada pelo INMETRO.</p>
+        <p>O dimensionador a laser mede volumes irregulares em movimento, a balança pesa e a leitora captura o código de barras automaticamente. <span class="opt">Para bancadas, a SmartCubo Standard faz o mesmo de forma estática, com balança homologada pelo INMETRO.</span></p>
         <ul class="specs">
           <li><strong>2.200</strong><span>pacotes por hora</span></li>
           <li><strong>200 g a 80 kg</strong><span>faixa de pesagem</span></li>
@@ -172,8 +180,9 @@
 
     <section class="step" id="fabrica" data-label="Fábrica">
       <div class="panel">
-        <p class="eyebrow"><span>Etapa 7</span>Fábrica em Rodeio/SC</p>
+        <p class="eyebrow"><span>Etapa 7</span>Fábrica e serviços em Rodeio/SC</p>
         <h2>Tudo isso sai daqui. Peça por peça.</h2>
+        <p class="opt">Projeto, fabricação, instalação e assistência pela mesma equipe.</p>
         <ul class="specs specs--list">
           <li><strong>Usinagem</strong><span>Torno CNC, torno convencional e fresa, com laboratório de metrologia.</span></li>
           <li><strong>Roletes</strong><span>Tubo galvanizado de 50,8 mm, eixo maciço de 15 mm e rolamentos 6002.</span></li>
@@ -193,8 +202,16 @@
         <h2>Operações que não podem parar.</h2>
         <p>Transportadoras, operadores de e-commerce e centros de distribuição que movimentam milhares de volumes por dia.</p>
         <ul class="clients">
-          <li>J&amp;T Express</li><li>Rodonaves</li><li>Saturno Brasil</li><li>FM Transportes</li>
-          <li>Ícaro Express</li><li>R3 Express</li><li>Vestra</li><li>Aceville</li><li>Duloc</li><li>Dia &amp; Noite</li>
+          <li><img src="assets/img/clientes/jt-express.webp" alt="J&amp;T Express" loading="lazy"></li>
+          <li><img src="assets/img/clientes/rodonaves.webp" alt="Rodonaves" loading="lazy"></li>
+          <li><img src="assets/img/clientes/saturno-brasil.webp" alt="Saturno Brasil" loading="lazy"></li>
+          <li><img src="assets/img/clientes/fm-transportes.webp" alt="FM Transportes" loading="lazy"></li>
+          <li><img src="assets/img/clientes/icaro-express.webp" alt="Ícaro Express" loading="lazy"></li>
+          <li><img src="assets/img/clientes/r3-express.webp" alt="R3 Express" loading="lazy"></li>
+          <li><img src="assets/img/clientes/vestra.webp" alt="Vestra" loading="lazy"></li>
+          <li><img src="assets/img/clientes/aceville.webp" alt="Aceville" loading="lazy"></li>
+          <li><img src="assets/img/clientes/dulog.webp" alt="Dulog" loading="lazy"></li>
+          <li><img src="assets/img/clientes/dia-e-noite.webp" alt="Dia &amp; Noite" loading="lazy"></li>
         </ul>
         <figure class="case">
           <img src="assets/img/case-shein.webp" alt="Linha de transportadores com proteção amarela instalada em centro de distribuição" loading="lazy">
@@ -207,20 +224,90 @@
       <div class="panel">
         <p class="eyebrow"><span>Destino</span>Fim do percurso</p>
         <h2>A próxima entrega é na sua operação.</h2>
-        <p>Conte como funciona o seu centro de distribuição hoje. A Exact desenha a linha, fabrica e instala.</p>
-        <div class="actions">
-          <a class="btn" href="https://wa.me/message/T6ADM7QQDJP3N1" target="_blank" rel="noopener">Solicitar projeto pelo WhatsApp</a>
-          <a class="btn btn--ghost" href="https://www.instagram.com/solucoesexact/" target="_blank" rel="noopener">@solucoesexact</a>
-        </div>
-        <address>Fábrica: R. Ribeirão do Salto, 156, Rodeio/SC, CEP 89136-000</address>
+        <p class="opt">Conte como funciona o seu centro de distribuição hoje. A Exact desenha a linha, fabrica e instala.</p>
+        <div class="form-slot" data-form="destino"></div>
       </div>
     </section>
   </main>
 
-  <footer class="foot">
-    <p>Exact Soluções, automação logística</p>
-    <p class="foot__note">Protótipo conceitual por Freela In Home</p>
+  <footer class="foot" id="rodape">
+    <div class="foot__in">
+      <div class="foot__head">
+        <img src="assets/img/logo-exact-light.png" alt="Exact Soluções" width="180" height="59" loading="lazy">
+        <p class="foot__claim">Automatizando o universo logístico.</p>
+      </div>
+      <div class="foot__cols">
+        <div>
+          <h3>Fale com a Exact</h3>
+          <ul>
+            <li><a href="https://wa.me/message/T6ADM7QQDJP3N1" target="_blank" rel="noopener">WhatsApp comercial</a></li>
+            <li><a href="https://www.instagram.com/solucoesexact/" target="_blank" rel="noopener">Instagram @solucoesexact</a></li>
+            <li><button class="foot__quote" type="button" data-quote>Pedir orçamento</button></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Fábrica</h3>
+          <address>R. Ribeirão do Salto, 156<br>Rodeio/SC<br>CEP 89136-000</address>
+        </div>
+        <div>
+          <h3>Navegue</h3>
+          <ul>
+            <li><a href="#transporte" data-go="1">Soluções</a></li>
+            <li><a href="#fabrica" data-go="6">Serviços</a></li>
+            <li><a href="#clientes" data-go="7">Clientes</a></li>
+            <li><a href="#destino" data-go="8">Contato</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot__base">
+        <p>© 2026 Exact Soluções. Automação logística.</p>
+        <p>Protótipo conceitual por Freela In Home</p>
+      </div>
+    </div>
   </footer>
+
+  <!-- Faixa fixa inferior -->
+  <div class="bar">
+    <p class="bar__cue"><span class="bar__mouse" aria-hidden="true"></span><span class="bar__txt">Role a página para ligar a esteira</span></p>
+    <button class="bar__btn" type="button" data-quote>Orçamento</button>
+  </div>
+
+  <!-- Popup de orçamento -->
+  <dialog class="modal" id="orcamento" aria-labelledby="orc-title">
+    <button class="modal__close" type="button" aria-label="Fechar" data-close></button>
+    <p class="eyebrow"><span>Orçamento</span>Resposta pela equipe comercial</p>
+    <h2 id="orc-title">Conte o que precisa mover.</h2>
+    <div class="form-slot" data-form="popup"></div>
+  </dialog>
+
+  <template id="tpl-form">
+    <form class="form" novalidate>
+      <div class="form__grid">
+        <label class="field"><span>Nome</span><input name="nome" autocomplete="name" required></label>
+        <label class="field"><span>Empresa</span><input name="empresa" autocomplete="organization"></label>
+        <label class="field"><span>WhatsApp</span><input name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" placeholder="(47) 90000-0000" required></label>
+        <label class="field"><span>E-mail</span><input name="email" type="email" autocomplete="email"></label>
+        <label class="field field--full field--pick"><span>O que você precisa</span>
+          <select name="interesse" required>
+            <option value="">Escolha uma opção</option>
+            <option>Transportadores de lona, roletes ou modular</option>
+            <option>Cubagem e pesagem</option>
+            <option>Sorter</option>
+            <option>Carga e descarga de caminhões</option>
+            <option>Projeto completo da linha</option>
+            <option>Manutenção e adequação NR12</option>
+          </select>
+        </label>
+        <label class="field field--full"><span>Sobre a operação</span><textarea name="mensagem" rows="2" placeholder="Volumes por dia, tamanho do galpão, prazo"></textarea></label>
+      </div>
+      <p class="form__err" role="alert" hidden>Preencha nome, WhatsApp e o que você precisa.</p>
+      <button class="btn form__send" type="submit">Enviar pedido de orçamento</button>
+    </form>
+    <div class="form__ok" hidden role="status">
+      <strong>Pedido enviado.</strong>
+      <p>A equipe da Exact vai falar com você pelo WhatsApp informado.</p>
+    </div>
+  </template>
 
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>

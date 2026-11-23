@@ -22,10 +22,10 @@
     blue: '#3b3350', steel: '#dcd7e8', ink: '#1e1533', muted: '#7a7092'
   };
   const REST = 820;
-  const FLOOR = 640, Y = 480, LOW = 560, TF = 400; // TF = piso do baú
+  const FLOOR = 640, Y = 480, LOW = 560, TF = 470; // TF = piso do baú
   const P = {
     rampA: -180, rampB: -40,
-    cub: 1900, dat: 2400, sort: 3000,
+    cub: 1900, dat: 2500, sort: 3000,
     chuteA: 3060, chuteB: 3160, incA: 3500, incB: 3740,
     truck: 3750, inTruck: 4010,
     factory: 4900, clientsA: 6150, dest: 8650, end: 8210
@@ -131,103 +131,112 @@
   }
 
   /* Caminhão baú de transportadora (não é da Exact).
-   * Origem (0,0) = canto traseiro no piso do baú. Chão fica em y = +240.
-   * Proporção: caixa de 70u ≈ 40 cm, então roda com ~1 m de diâmetro ≈ r 80. */
+   * Origem (0,0) = canto traseiro no piso do baú; o chão fica em y = GR.
+   * Proporção de caminhão real: piso a ~1,3 m, roda de ~1 m, baú de ~2,6 m de altura
+   * e ~7 m de comprimento (encurtado), eixo traseiro duplo e cabine avançada. */
   function buildTruck(parent, x, flip) {
-    const GR = FLOOR - TF;            // 240: distância do piso do baú ao chão
-    const WR = 80, WY = GR - WR;      // raio e centro das rodas (encostadas no chão)
+    const GR = FLOOR - TF;            // 170: piso do baú até o chão
+    const WR = 60, WY = GR - WR;      // rodas encostadas no chão
+    const BL = 760, BH = 330;         // baú
+    const CX = BL + 18;               // início da cabine
     const g = mk('g', { transform: `translate(${x},${TF})${flip ? ' scale(-1,1)' : ''}` }, parent);
     const ink = '#2a2338', ink2 = '#3a3150', cabC = '#352a5c', cabL = '#4a3d78';
 
     // portas traseiras abertas
     const doors = mk('g', {}, g);
-    mk('rect', { x: -46, y: -286, width: 44, height: 292, rx: 3, fill: '#f1eef7', stroke: '#cfc7e2', 'stroke-width': 2 }, doors);
-    for (let i = 0; i < 3; i++) mk('rect', { x: -40, y: -250 + i * 90, width: 32, height: 3, fill: '#d8d1e8' }, doors);
-    mk('rect', { x: -30, y: -150, width: 5, height: 46, rx: 2, fill: '#9d94b6' }, doors);
+    mk('rect', { x: -46, y: -BH + 4, width: 44, height: BH + 2, rx: 3, fill: '#f1eef7', stroke: '#cfc7e2', 'stroke-width': 2 }, doors);
+    for (let i = 0; i < 3; i++) mk('rect', { x: -40, y: -BH + 40 + i * 100, width: 32, height: 3, fill: '#d8d1e8' }, doors);
+    mk('rect', { x: -30, y: -170, width: 5, height: 50, rx: 2, fill: '#9d94b6' }, doors);
 
-    // chassi: longarina contínua e suspensão
-    mk('rect', { x: 10, y: 6, width: 700, height: 30, rx: 4, fill: ink }, g);
-    mk('rect', { x: 120, y: 36, width: 260, height: 26, rx: 4, fill: ink2 }, g);
-    mk('rect', { x: 580, y: 36, width: 90, height: 22, rx: 4, fill: ink2 }, g);
-    mk('rect', { x: 400, y: 30, width: 110, height: 50, rx: 8, fill: '#4b4266' }, g);
-    mk('rect', { x: 408, y: 40, width: 94, height: 4, fill: 'rgba(255,255,255,.18)' }, g);
-    mk('rect', { x: 412, y: 92, width: 120, height: 8, rx: 3, fill: '#cfc8e0' }, g);
-    mk('rect', { x: 412, y: 116, width: 120, height: 8, rx: 3, fill: '#cfc8e0' }, g);
+    // chassi, suspensão, tanque, caixa de ferramentas e protetor lateral
+    mk('rect', { x: 10, y: 6, width: CX + 170, height: 26, rx: 4, fill: ink }, g);
+    mk('rect', { x: 96, y: 32, width: 258, height: 20, rx: 4, fill: ink2 }, g);
+    mk('rect', { x: CX + 50, y: 32, width: 96, height: 16, rx: 4, fill: ink2 }, g);
+    mk('rect', { x: 400, y: 36, width: 86, height: 46, rx: 5, fill: ink2 }, g);
+    mk('rect', { x: 432, y: 50, width: 22, height: 5, rx: 2, fill: '#6d6290' }, g);
+    mk('rect', { x: 520, y: 34, width: 140, height: 52, rx: 12, fill: '#4b4266' }, g);
+    mk('rect', { x: 530, y: 44, width: 120, height: 4, rx: 2, fill: 'rgba(255,255,255,.18)' }, g);
+    mk('rect', { x: 384, y: 96, width: 380, height: 7, rx: 3, fill: '#cfc8e0' }, g);
+    mk('rect', { x: 384, y: 116, width: 380, height: 7, rx: 3, fill: '#cfc8e0' }, g);
+    // para-barro atrás do eixo traseiro
+    mk('rect', { x: 66, y: 40, width: 8, height: 104, rx: 2, fill: ink }, g);
 
     // baú
-    mk('rect', { x: 0, y: -290, width: 520, height: 296, rx: 6, fill: '#ffffff' }, g);
-    mk('rect', { x: 0, y: -290, width: 520, height: 12, rx: 6, fill: '#e6e1f1' }, g);
-    mk('rect', { x: 0, y: -8, width: 520, height: 14, fill: '#d9d4e6' }, g);
-    for (let i = 65; i < 520; i += 65) mk('rect', { x: i, y: -278, width: 1.5, height: 270, fill: '#eeeaf6' }, g);
+    mk('rect', { x: 0, y: -BH, width: BL, height: BH + 6, rx: 6, fill: '#ffffff' }, g);
+    mk('rect', { x: 0, y: -BH, width: BL, height: 12, rx: 6, fill: '#e6e1f1' }, g);
+    mk('rect', { x: 0, y: -8, width: BL, height: 14, fill: '#d9d4e6' }, g);
+    for (let i = 76; i < BL; i += 76) mk('rect', { x: i, y: -BH + 12, width: 1.5, height: BH - 20, fill: '#eeeaf6' }, g);
     // faixa refletiva vermelha e branca (obrigatória em caminhões no Brasil)
-    for (let i = 4; i < 516; i += 24) mk('rect', { x: i, y: -26, width: 12, height: 8, fill: (i - 4) % 48 === 0 ? '#e5484d' : '#d9d4e6' }, g);
+    for (let i = 4; i < BL - 8; i += 24) mk('rect', { x: i, y: -26, width: 12, height: 8, fill: (i - 4) % 48 === 0 ? '#e5484d' : '#d9d4e6' }, g);
     // pintura da transportadora: ondas lilás + símbolo genérico de carga em movimento
-    const art = mk('g', flip ? { transform: 'translate(520,0) scale(-1,1)' } : {}, g);
-    mk('path', { d: 'M0,-96 C140,-96 220,-156 360,-156 C430,-156 480,-138 520,-126 V-34 H0 Z', fill: '#ece6fc' }, art);
-    mk('path', { d: 'M0,-60 C150,-60 240,-116 380,-116 C440,-116 490,-104 520,-96 V-34 H0 Z', fill: '#c9b8f5' }, art);
-    const em = mk('g', { transform: 'translate(120,-236)' }, art);
-    [0, 14, 28].forEach((dy, i) => mk('rect', { x: i * 10, y: 6 + dy, width: 38 - i * 10, height: 6, rx: 3, fill: C.lime }, em));
-    mk('rect', { x: 46, y: 0, width: 52, height: 46, rx: 6, fill: C.pur }, em);
-    mk('path', { d: 'M46,16 H98 M72,0 V16', stroke: '#ffffff', 'stroke-width': 3, fill: 'none' }, em);
-    txt(em, 112, 21, 'CARGAS E', { 'font-size': 18, 'font-weight': 700, fill: C.ink, 'letter-spacing': 1 });
-    txt(em, 112, 44, 'ENCOMENDAS', { 'font-size': 18, 'font-weight': 700, fill: C.pur, 'letter-spacing': 1 });
+    const art = mk('g', flip ? { transform: `translate(${BL},0) scale(-1,1)` } : {}, g);
+    const k = BL / 520;
+    mk('path', { d: `M0,-110 C${140 * k},-110 ${220 * k},-176 ${360 * k},-176 C${430 * k},-176 ${480 * k},-156 ${BL},-142 V-34 H0 Z`, fill: '#ece6fc' }, art);
+    mk('path', { d: `M0,-68 C${150 * k},-68 ${240 * k},-128 ${380 * k},-128 C${440 * k},-128 ${490 * k},-114 ${BL},-106 V-34 H0 Z`, fill: '#c9b8f5' }, art);
+    const em = mk('g', { transform: `translate(150,${-BH + 60})` }, art);
+    [0, 16, 32].forEach((dy, i) => mk('rect', { x: i * 12, y: 8 + dy, width: 46 - i * 12, height: 7, rx: 3.5, fill: C.lime }, em));
+    mk('rect', { x: 56, y: 0, width: 62, height: 56, rx: 7, fill: C.pur }, em);
+    mk('path', { d: 'M56,19 H118 M87,0 V19', stroke: '#ffffff', 'stroke-width': 3.5, fill: 'none' }, em);
+    txt(em, 136, 25, 'CARGAS E', { 'font-size': 22, 'font-weight': 700, fill: C.ink, 'letter-spacing': 1 });
+    txt(em, 136, 52, 'ENCOMENDAS', { 'font-size': 22, 'font-weight': 700, fill: C.pur, 'letter-spacing': 1 });
 
     // porta fechada (aparece ao carregar)
-    const shut = mk('rect', { x: -4, y: -290, width: 8, height: 296, rx: 2, fill: '#b8b0cc', opacity: 0 }, g);
+    const shut = mk('rect', { x: -4, y: -BH, width: 8, height: BH + 6, rx: 2, fill: '#b8b0cc', opacity: 0 }, g);
 
     // para-choque traseiro com refletivo e lanterna
-    mk('rect', { x: 18, y: 36, width: 10, height: 84, fill: ink }, g);
-    mk('rect', { x: 4, y: 116, width: 74, height: 18, rx: 3, fill: ink }, g);
-    for (let i = 0; i < 4; i++) mk('rect', { x: 8 + i * 17, y: 120, width: 9, height: 10, fill: i % 2 ? '#f4f2fa' : '#e5484d' }, g);
+    mk('rect', { x: 18, y: 32, width: 10, height: 92, fill: ink }, g);
+    mk('rect', { x: 4, y: 120, width: 74, height: 16, rx: 3, fill: ink }, g);
+    for (let i = 0; i < 4; i++) mk('rect', { x: 8 + i * 17, y: 123, width: 9, height: 10, fill: i % 2 ? '#f4f2fa' : '#e5484d' }, g);
     mk('rect', { x: 2, y: 8, width: 12, height: 20, rx: 3, fill: '#e5484d' }, g);
 
     // defletor de ar entre cabine e baú
-    mk('path', { d: 'M548,-212 L556,-284 H644 L676,-212 Z', fill: cabL }, g);
-    mk('path', { d: 'M556,-284 H644 L650,-268 H558 Z', fill: 'rgba(255,255,255,.12)' }, g);
+    mk('path', { d: `M${CX + 6},-236 L${CX + 14},${-BH + 6} H${CX + 112} L${CX + 150},-236 Z`, fill: cabL }, g);
+    mk('path', { d: `M${CX + 14},${-BH + 6} H${CX + 112} L${CX + 118},${-BH + 22} H${CX + 16} Z`, fill: 'rgba(255,255,255,.12)' }, g);
     // cabine avançada
-    mk('path', { d: 'M540,6 V-196 Q540,-214 558,-214 H690 Q708,-214 712,-196 L726,-60 V6 Z', fill: cabC }, g);
-    mk('path', { d: 'M640,-200 H694 Q702,-200 704,-190 L714,-110 H640 Z', fill: '#bfe0ec' }, g);
-    mk('path', { d: 'M654,-196 H700 L705,-160 Z', fill: 'rgba(255,255,255,.6)' }, g);
-    mk('path', { d: 'M566,-196 H628 V-120 H566 Z', fill: '#bfe0ec', opacity: .92 }, g);
-    mk('path', { d: 'M560,-206 H634 V-10 H560 Z', fill: 'none', stroke: 'rgba(255,255,255,.16)', 'stroke-width': 2 }, g);
-    mk('rect', { x: 602, y: -96, width: 22, height: 6, rx: 3, fill: '#a99fd0' }, g);
-    mk('rect', { x: 540, y: -66, width: 186, height: 10, fill: C.lime }, g);
-    mk('rect', { x: 716, y: -176, width: 6, height: 60, rx: 3, fill: ink }, g);
-    mk('rect', { x: 720, y: -168, width: 16, height: 44, rx: 5, fill: ink }, g);
-    mk('rect', { x: 688, y: -50, width: 40, height: 40, rx: 6, fill: '#2a2140' }, g);
-    for (let i = 0; i < 4; i++) mk('rect', { x: 694, y: -44 + i * 9, width: 30, height: 4, rx: 2, fill: '#4a3d78' }, g);
-    mk('rect', { x: 712, y: -6, width: 26, height: 32, rx: 5, fill: ink }, g);
-    mk('rect', { x: 722, y: -40, width: 14, height: 16, rx: 4, fill: '#fff4c2' }, g);
-    mk('rect', { x: 588, y: 8, width: 40, height: 10, rx: 3, fill: ink2 }, g);
+    mk('path', { d: `M${CX},10 V-222 Q${CX},-240 ${CX + 18},-240 H${CX + 150} Q${CX + 168},-240 ${CX + 172},-222 L${CX + 188},-66 V10 Z`, fill: cabC }, g);
+    mk('path', { d: `M${CX + 102},-226 H${CX + 154} Q${CX + 162},-226 ${CX + 164},-216 L${CX + 175},-128 H${CX + 102} Z`, fill: '#bfe0ec' }, g);
+    mk('path', { d: `M${CX + 116},-222 H${CX + 158} L${CX + 163},-186 Z`, fill: 'rgba(255,255,255,.6)' }, g);
+    mk('path', { d: `M${CX + 26},-224 H${CX + 90} V-140 H${CX + 26} Z`, fill: '#bfe0ec', opacity: .92 }, g);
+    mk('path', { d: `M${CX + 20},-232 H${CX + 96} V-12 H${CX + 20} Z`, fill: 'none', stroke: 'rgba(255,255,255,.16)', 'stroke-width': 2 }, g);
+    mk('rect', { x: CX + 64, y: -110, width: 22, height: 6, rx: 3, fill: '#a99fd0' }, g);
+    mk('rect', { x: CX, y: -80, width: 188, height: 10, fill: C.lime }, g);
+    mk('rect', { x: CX + 176, y: -198, width: 6, height: 64, rx: 3, fill: ink }, g);
+    mk('rect', { x: CX + 180, y: -190, width: 16, height: 46, rx: 5, fill: ink }, g);
+    mk('rect', { x: CX + 148, y: -62, width: 40, height: 44, rx: 6, fill: '#2a2140' }, g);
+    for (let i = 0; i < 4; i++) mk('rect', { x: CX + 154, y: -56 + i * 10, width: 30, height: 4, rx: 2, fill: '#4a3d78' }, g);
+    mk('rect', { x: CX + 172, y: -8, width: 28, height: 34, rx: 5, fill: ink }, g);
+    mk('rect', { x: CX + 182, y: -50, width: 14, height: 16, rx: 4, fill: '#fff4c2' }, g);
+    mk('rect', { x: CX + 36, y: 12, width: 44, height: 10, rx: 3, fill: ink2 }, g);
 
     // para-lamas
     const fender = (x1, x2) => mk('path', {
-      d: `M${x1},${WY} A${WR + 12},${WR + 12} 0 0 1 ${x1 + WR + 12},${WY - WR - 12} H${x2 - WR - 12} A${WR + 12},${WR + 12} 0 0 1 ${x2},${WY}`,
-      fill: 'none', stroke: ink, 'stroke-width': 10, 'stroke-linecap': 'round'
+      d: `M${x1},${WY} A${WR + 10},${WR + 10} 0 0 1 ${x1 + WR + 10},${WY - WR - 10} H${x2 - WR - 10} A${WR + 10},${WR + 10} 0 0 1 ${x2},${WY}`,
+      fill: 'none', stroke: ink, 'stroke-width': 9, 'stroke-linecap': 'round'
     }, g);
-    fender(150 - WR - 12, 320 + WR + 12);
-    fender(634 - WR - 12, 634 + WR + 12);
+    const AX = [150, 284, CX + 96];
+    fender(AX[0] - WR - 10, AX[1] + WR + 10);
+    fender(AX[2] - WR - 10, AX[2] + WR + 10);
 
     // rodas: pneu, aro, cubo e parafusos (o grupo interno gira)
     const wheels = [];
-    [150, 320, 634].forEach(cx => {
+    AX.forEach(cx => {
       const w = mk('g', {}, g);
       mk('circle', { cx, cy: WY, r: WR, fill: '#221c33' }, w);
-      mk('circle', { cx, cy: WY, r: 46, fill: '#dcd7e8' }, w);
-      mk('circle', { cx, cy: WY, r: 40, fill: '#c3bcd6' }, w);
+      mk('circle', { cx, cy: WY, r: 35, fill: '#dcd7e8' }, w);
+      mk('circle', { cx, cy: WY, r: 30, fill: '#c3bcd6' }, w);
       const spin = mk('g', {}, w);
-      mk('circle', { cx, cy: WY, r: WR - 7, fill: 'none', stroke: '#3a3150', 'stroke-width': 4, 'stroke-dasharray': '9 9' }, spin);
-      for (let k = 0; k < 8; k++) {
-        const a = k * Math.PI / 4;
-        mk('circle', { cx: cx + Math.cos(a) * 28, cy: WY + Math.sin(a) * 28, r: 5, fill: '#8d84a6' }, spin);
+      mk('circle', { cx, cy: WY, r: WR - 6, fill: 'none', stroke: '#3a3150', 'stroke-width': 3.5, 'stroke-dasharray': '7 7' }, spin);
+      for (let i = 0; i < 8; i++) {
+        const a = i * Math.PI / 4;
+        mk('circle', { cx: cx + Math.cos(a) * 21, cy: WY + Math.sin(a) * 21, r: 3.8, fill: '#8d84a6' }, spin);
       }
-      mk('circle', { cx, cy: WY, r: 15, fill: '#8d84a6' }, spin);
-      mk('rect', { x: cx - 3, y: WY - 15, width: 6, height: 10, fill: '#dcd7e8' }, spin);
+      mk('circle', { cx, cy: WY, r: 11, fill: '#8d84a6' }, spin);
+      mk('rect', { x: cx - 2.5, y: WY - 11, width: 5, height: 8, fill: '#dcd7e8' }, spin);
       wheels.push({ el: spin, cx, cy: WY });
     });
     // sombra no chão
-    mk('ellipse', { cx: 370, cy: GR + 3, rx: 400, ry: 9, fill: 'rgba(42,35,56,.16)' }, g);
-    return { g, doors, shut, wheels };
+    mk('ellipse', { cx: (CX + 200) / 2, cy: GR + 3, rx: (CX + 260) / 2, ry: 8, fill: 'rgba(42,35,56,.16)' }, g);
+    return { g, doors, shut, wheels, WR };
   }
 
   /* ---------------- o mundo ---------------- */
@@ -299,8 +308,9 @@
     const d = mk('g', { opacity: 0 }, f);
     mk('path', { d: `M${x - 45},392 H${x + 45} M${x - 45},386 V398 M${x + 45},386 V398`, stroke: C.lime, 'stroke-width': 2, fill: 'none' }, d);
     R.dW = txt(d, x, 382, '45 cm', { 'text-anchor': 'middle', 'font-size': 13, fill: C.lime, 'font-weight': 600 });
-    mk('path', { d: `M${x - 60},410 V${Y} M${x - 66},410 H${x - 54} M${x - 66},${Y} H${x - 54}`, stroke: C.lime, 'stroke-width': 2, fill: 'none' }, d);
-    R.dH = txt(d, x - 70, 450, '32 cm', { 'text-anchor': 'end', 'font-size': 13, fill: C.lime, 'font-weight': 600 });
+    mk('path', { d: `M${x + 68},410 V${Y} M${x + 62},410 H${x + 74} M${x + 62},${Y} H${x + 74}`, stroke: C.lime, 'stroke-width': 2, fill: 'none' }, d);
+    mk('rect', { x: x + 76, y: 436, width: 50, height: 20, rx: 4, fill: '#ffffff' }, d);
+    R.dH = txt(d, x + 101, 450, '32 cm', { 'text-anchor': 'middle', 'font-size': 13, fill: C.lime, 'font-weight': 600 });
     R.dims = d;
     // monitor com leituras
     const m = mk('g', {}, g);
@@ -312,17 +322,21 @@
 
   function buildDados() {
     const x = P.dat, g = mk('g', {}, mback), f = mk('g', {}, mfront);
-    // pórtico de identificação
+    // pórtico do webservice com antena no topo
     mk('rect', { x: x - 90, y: 300, width: 10, height: FLOOR - 300, fill: C.leg }, g);
     mk('rect', { x: x + 80, y: 300, width: 10, height: FLOOR - 300, fill: C.leg }, g);
-    mk('rect', { x: x - 96, y: 290, width: 192, height: 16, fill: '#2a2140' }, g);
-    R.gate = mk('rect', { x: x - 96, y: 304, width: 192, height: 3, fill: C.lime, opacity: .2 }, g);
-    // sistemas
-    const nodes = [['ERP', x - 210, 96], ['WMS', x - 30, 64], ['TMS', x + 150, 96]];
+    mk('rect', { x: x - 96, y: 288, width: 192, height: 20, fill: '#2a2140' }, g);
+    txt(g, x, 302, 'WEBSERVICE', { 'text-anchor': 'middle', 'font-size': 10, fill: '#ffffff', 'letter-spacing': 2 });
+    R.gate = mk('rect', { x: x - 96, y: 306, width: 192, height: 3, fill: C.lime, opacity: .2 }, g);
+    mk('rect', { x: x - 2, y: 270, width: 4, height: 18, fill: '#2a2140' }, g);
+    R.hub = mk('circle', { cx: x, cy: 268, r: 6, fill: C.lime, opacity: .3 }, g);
+    // sistemas em leque acima do pórtico
+    const nodes = [['ERP', x - 250, 150], ['WMS', x - 36, 92], ['TMS', x + 178, 150]];
     R.links = []; R.packets = [];
     nodes.forEach(([n, nx, ny], i) => {
+      const cx = nx + 36, by = ny + 28;
       const path = mk('path', {
-        d: `M${R.screenX},${R.screenY} C${R.screenX + 60},${ny - 20} ${nx - 80},${ny + 80} ${nx + 36},${ny + 20}`,
+        d: `M${x},262 C${x},${by + 60} ${cx},${by + 70} ${cx},${by}`,
         fill: 'none', stroke: C.lime, 'stroke-width': 1.5, 'stroke-dasharray': '4 6', opacity: 0
       }, f);
       R.links.push(path);
@@ -333,7 +347,6 @@
       const pk = mk('rect', { width: 10, height: 10, x: -5, y: -5, fill: C.lime, filter: 'url(#fGlow)', opacity: 0 }, f);
       R.packets.push({ el: pk, path, delay: i * .18 });
     });
-    txt(g, x, 286, 'WEBSERVICE', { 'text-anchor': 'middle', 'font-size': 10, fill: C.muted, 'letter-spacing': 2 });
   }
 
   function buildSorter() {
@@ -350,8 +363,8 @@
     });
     txt(g, x + 20, 214, 'SORTER PNEUMÁTICO', { 'text-anchor': 'middle', 'font-size': 10, fill: C.muted, 'letter-spacing': 2 });
     // desviador pneumático (braço amarelo + cilindro)
-    mk('rect', { x: x + 40, y: Y - 120, width: 12, height: 70, fill: '#8d84a6' }, f);
-    mk('rect', { x: x + 43, y: Y - 60, width: 6, height: 30, fill: C.steel }, f);
+    mk('rect', { x: x + 40, y: Y - 120, width: 12, height: 70, fill: '#8d84a6' }, g);
+    mk('rect', { x: x + 43, y: Y - 60, width: 6, height: 30, fill: C.steel }, g);
     R.flap = mk('rect', { x: x + 20, y: Y - 34, width: 64, height: 12, fill: C.yel, rx: 2 }, f);
     R.flapPivot = [x + 84, Y - 28];
   }
@@ -374,12 +387,13 @@
   }
 
   function buildBillboards() {
-    const names = ['J&T EXPRESS', 'RODONAVES', 'SATURNO BRASIL', 'FM TRANSPORTES', 'ÍCARO EXPRESS', 'R3 EXPRESS', 'VESTRA', 'ACEVILLE'];
-    names.forEach((n, i) => {
-      const x = P.clientsA + i * 230, g = mk('g', {}, scenery);
-      mk('rect', { x: x + 96, y: -10, width: 8, height: FLOOR + 10, fill: '#b3a9c9' }, g);
-      mk('rect', { x: 0 + x, y: -70, width: 200, height: 60, fill: '#ffffff', stroke: 'rgba(123,79,224,.5)', 'stroke-width': 2 }, g);
-      txt(g, x + 100, -34, n, { 'text-anchor': 'middle', 'font-size': 15, fill: C.ink, 'font-weight': 600 });
+    const logos = ['jt-express', 'rodonaves', 'saturno-brasil', 'fm-transportes', 'icaro-express',
+      'r3-express', 'vestra', 'aceville', 'dulog', 'dia-e-noite'];
+    logos.forEach((n, i) => {
+      const x = P.clientsA + i * 250, g = mk('g', {}, scenery);
+      mk('rect', { x: x + 106, y: -10, width: 8, height: FLOOR + 10, fill: '#b3a9c9' }, g);
+      mk('rect', { x, y: -96, width: 220, height: 86, rx: 6, fill: '#ffffff', stroke: 'rgba(123,79,224,.4)', 'stroke-width': 2 }, g);
+      mk('image', { href: `assets/img/clientes/${n}.webp`, x: x + 16, y: -86, width: 188, height: 66, preserveAspectRatio: 'xMidYMid meet' }, g);
     });
   }
 
@@ -431,14 +445,36 @@
   /* ---------------- câmera e render ---------------- */
   let view = { w: 1200, h: 760, s: 1, mobile: false, ax: 0, ay: 0 };
 
+  const stageEl = document.querySelector('.stage');
+  let panelMax = 520;
+
+  // Ancora a esteira perto do pé do palco e mede quanto espaço sobra acima dela para os cards.
   function layout() {
-    const W = innerWidth, H = innerHeight;
-    const mobile = W <= 860 || W / H < 1;
-    const s = mobile ? W / 560 : Math.min(H / 760, W / 1100);
+    const W = innerWidth, H = stageEl.clientHeight;
+    const mobile = W <= 860 || W / innerHeight < 1;
+    const s = mobile ? W / 560 : Math.min(H / 740, W / 1100);
     view = { w: W / s, h: H / s, s, mobile };
     view.ax = view.w * (mobile ? .5 : .66);
-    view.ay = view.h * (mobile ? .82 : .76);
+    view.ay = view.h - (mobile ? 12 : 22) / s - (FLOOR - Y);
     svg.setAttribute('viewBox', `0 0 ${view.w} ${view.h}`);
+    const belt = view.ay * s - 4;                     // topo da esteira na tela, em px
+    const top = parseFloat(getComputedStyle(panels[0]).top) || 96;
+    const clear = mobile ? 130 * s : 0;               // no mobile a caixa e o selo ficam visíveis
+    panelMax = belt - clear - top - (mobile ? 8 : 18);
+    document.documentElement.style.setProperty('--belt', `${belt}px`);
+    fitPanels();
+  }
+
+  // Nenhum card pode passar da esteira: reduz por níveis e, se ainda faltar, escala.
+  function fitPanels() {
+    panels.forEach(p => {
+      p.classList.remove('fit-1', 'fit-2', 'fit-3', 'fit-4');
+      gsap.set(p, { scale: 1 });
+      let lvl = 0;
+      while (p.offsetHeight > panelMax && lvl < 4) p.classList.add(`fit-${++lvl}`);
+      const h = p.offsetHeight;
+      gsap.set(p, { scale: h > panelMax ? Math.max(.6, panelMax / h) : 1 });
+    });
   }
 
   let lastRead = '';
@@ -463,7 +499,7 @@
     // caminhão de expedição
     const tr = S.truck;
     R.truck.g.setAttribute('transform', `translate(${tr},${TF})`);
-    const wr = ((tr - P.truck) / 80) * 57.3;
+    const wr = ((tr - P.truck) / R.truck.WR) * 57.3;
     R.truck.wheels.forEach(w => w.el.setAttribute('transform', `rotate(${wr.toFixed(1)} ${w.cx} ${w.cy})`));
     R.truck.doors.setAttribute('opacity', 1 - S.doors);
     R.truck.shut.setAttribute('opacity', S.doors);
@@ -485,6 +521,7 @@
 
     // dados
     R.gate.setAttribute('opacity', .2 + S.ok * .8);
+    R.hub.setAttribute('opacity', .3 + S.link * .7);
     R.links.forEach(p => { p.setAttribute('opacity', S.link); p._node.setAttribute('opacity', S.link); });
     R.packets.forEach(pk => {
       const t = clamp01((S.data - pk.delay) / .6);
@@ -508,6 +545,7 @@
   /* ---------------- timeline de scroll ---------------- */
   let st, tl, intro;
   const sections = [...document.querySelectorAll('.step')];
+  const panels = sections.map(s => s.querySelector('.panel'));
 
   function buildTimeline() {
     if (st) st.kill();
@@ -527,6 +565,13 @@
       tl.fromTo(S, from, { ...to, duration: d, ease, immediateRender: false }, t);
     };
 
+    // cards: um por vez. O anterior sai antes do próximo entrar, nunca ficam colados.
+    sections.forEach((sec, i) => {
+      const p = panels[i], T = sec.offsetTop, Hs = sec.offsetHeight;
+      if (i > 0) tl.fromTo(p, { autoAlpha: 0, y: 26 }, { autoAlpha: 1, y: 0, duration: vh * .22, ease: 'power2.out', immediateRender: false }, Math.max(0, T - vh * .34));
+      if (i < sections.length - 1) tl.fromTo(p, { autoAlpha: 1, y: 0 }, { autoAlpha: 0, y: -26, duration: vh * .2, ease: 'power2.in', immediateRender: false }, T + Hs - vh * .76);
+    });
+
     // 02 transporte: a caixa atravessa lona, roletes e modular
     go(1, 0, 1, { x: REST }, { x: 1560 }, 'power1.in');
     // 03 cubagem
@@ -543,6 +588,7 @@
     go(3, .36, .85, { data: 0 }, { data: 1 }, 'none');
     go(3, .7, .8, { ok: 0 }, { ok: 1 });
     // 05 triagem
+    go(4, 0, .2, { link: 1 }, { link: 0 });
     go(4, 0, .3, { x: P.dat }, { x: P.sort }, 'power2.inOut');
     go(4, .3, .4, { lane: 0 }, { lane: 1 });
     go(4, .4, .5, { flap: 0 }, { flap: 1 }, 'back.out(2)');
@@ -551,26 +597,38 @@
     go(5, 0, .7, { x: 3330 }, { x: P.inTruck }, 'power1.inOut');
     go(5, .75, .9, { doors: 0 }, { doors: 1 });
     // 07 fábrica: o caminhão sai e a câmera abre
-    go(5, .7, 1, { zoom: 1, camOff: 0 }, { zoom: view.mobile ? .66 : .72, camOff: 180 });
-    go(6, 0, 1, { x: P.inTruck, truck: P.truck }, { x: 5600, truck: 5600 - (P.inTruck - P.truck) }, 'power1.in');
+    const z1 = view.mobile ? .62 : .72, z2 = view.mobile ? .52 : .62;
+    go(5, .7, 1, { zoom: 1, camOff: 0 }, { zoom: z1, camOff: 180 });
+    const lead = P.inTruck - P.truck;
+    go(6, 0, 1, { x: P.inTruck, truck: P.truck }, { x: 5600, truck: 5600 - lead }, 'power1.in');
     // 08 clientes
-    go(7, 0, 1, { x: 5600, truck: 5600 - (P.inTruck - P.truck) }, { x: 7300, truck: 7300 - (P.inTruck - P.truck) });
+    go(7, 0, 1, { x: 5600, truck: 5600 - lead }, { x: 7300, truck: 7300 - lead });
     // 09 destino
-    go(8, 0, .6, { camOff: 180, zoom: view.mobile ? .66 : .72 }, { camOff: view.mobile ? 600 : 520, zoom: view.mobile ? .56 : .62 }, 'power1.inOut');
-    go(8, 0, .6, { x: 7300, truck: 7300 - (P.inTruck - P.truck) }, { x: P.end, truck: P.end - (P.inTruck - P.truck) }, 'power2.out');
+    go(8, 0, .6, { camOff: 180, zoom: z1 }, { camOff: view.mobile ? 600 : 520, zoom: z2 }, 'power1.inOut');
+    go(8, 0, .6, { x: 7300, truck: 7300 - lead }, { x: P.end, truck: P.end - lead }, 'power2.out');
     go(8, .6, .7, { done: 0 }, { done: 1 });
     tl.set({}, {}, max); // duração da timeline = pixels de scroll
 
     st = ScrollTrigger.create({
       start: 0, end: 'max', scrub: reduce ? true : .7, animation: tl,
       onUpdate: self => {
-        if (intro && intro.isActive() && self.scroll() > 20) intro.progress(1);
-        railProgress(self.progress);
+        if (intro && self.scroll() > 20) {
+          // rolou antes ou durante a abertura: encerra e redesenha a cena no ponto do scroll
+          intro.progress(1).kill(); intro = null;
+          const t = tl.time(); tl.time(0, true).time(t, true);
+        }
+        railProgress();
       }
     });
   }
 
-  /* ---------------- trilho de etapas no topo ---------------- */
+  /* ---------------- navegação ---------------- */
+  function goTo(i) {
+    const s = sections[i];
+    const y = i === 0 ? 0 : s.offsetTop + innerHeight * .6;
+    window.scrollTo({ top: y, behavior: reduce ? 'auto' : 'smooth' });
+  }
+
   const stepsEl = document.querySelector('.rail__steps');
   const fill = document.querySelector('.rail__fill'), railBox = document.querySelector('.rail__box');
   const nowNum = document.querySelector('.rail__num'), nowLabel = document.querySelector('.rail__label');
@@ -580,16 +638,13 @@
     const b = document.createElement('button');
     b.type = 'button';
     b.setAttribute('aria-label', `${String(i + 1).padStart(2, '0')} ${s.dataset.label}`);
-    b.addEventListener('click', () => {
-      const y = i === 0 ? 0 : s.offsetTop + Math.min(s.offsetHeight - innerHeight, innerHeight * .9);
-      window.scrollTo({ top: y, behavior: reduce ? 'auto' : 'smooth' });
-    });
+    b.addEventListener('click', () => goTo(i));
     li.appendChild(b); stepsEl.appendChild(li);
     return b;
   });
   let current = -1;
   function railProgress() {
-    const mid = scrollY + innerHeight * .5;
+    const mid = scrollY + innerHeight * .3;
     let idx = 0;
     sections.forEach((s, i) => { if (s.offsetTop <= mid) idx = i; });
     const s = sections[idx], next = sections[idx + 1];
@@ -604,21 +659,92 @@
     }
   }
 
+  // menu de páginas
+  const menu = document.querySelector('.menu'), menuBtn = menu.querySelector('.menu__toggle');
+  const setMenu = open => { menu.classList.toggle('is-open', open); menuBtn.setAttribute('aria-expanded', open); };
+  menuBtn.addEventListener('click', () => setMenu(!menu.classList.contains('is-open')));
+  document.addEventListener('click', e => { if (!menu.contains(e.target)) setMenu(false); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
+  document.querySelectorAll('[data-go]').forEach(a => a.addEventListener('click', e => {
+    e.preventDefault(); setMenu(false); goTo(+a.dataset.go);
+  }));
+
+  /* ---------------- formulários e popup de orçamento ---------------- */
+  // Protótipo: sem destino configurado o envio só mostra a confirmação.
+  // Para enviar de verdade, preencher data-endpoint no <form> (Formspree, Web3Forms ou API do cliente).
+  const tpl = document.getElementById('tpl-form');
+  document.querySelectorAll('.form-slot').forEach(slot => {
+    const pre = slot.dataset.form;
+    const frag = tpl.content.cloneNode(true);
+    frag.querySelectorAll('input, select, textarea').forEach(el => (el.id = `${pre}-${el.name}`));
+    slot.appendChild(frag);
+    const form = slot.querySelector('form'), ok = slot.querySelector('.form__ok'), err = slot.querySelector('.form__err');
+    form.addEventListener('input', e => e.target.closest('.field')?.classList.remove('is-bad'));
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      let msg = '';
+      form.querySelectorAll('[required]').forEach(el => {
+        const bad = !el.value.trim();
+        el.closest('.field').classList.toggle('is-bad', bad);
+        if (bad) msg = 'Preencha nome, WhatsApp e o que você precisa.';
+      });
+      const tel = form.whatsapp.value.replace(/\D/g, '');
+      if (!msg && tel.length < 10) { form.whatsapp.closest('.field').classList.add('is-bad'); msg = 'Confira o WhatsApp com DDD.'; }
+      if (!msg && form.email.value && !form.email.checkValidity()) { form.email.closest('.field').classList.add('is-bad'); msg = 'Confira o e-mail informado.'; }
+      err.hidden = !msg; err.textContent = msg;
+      if (msg) { form.querySelector('.is-bad input, .is-bad select')?.focus(); return; }
+      const send = form.querySelector('.form__send');
+      send.disabled = true; send.textContent = 'Enviando';
+      try {
+        if (form.dataset.endpoint) await fetch(form.dataset.endpoint, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } });
+      } catch (_) { /* protótipo: segue para a confirmação */ }
+      const nome = form.nome.value.trim().split(/\s+/)[0];
+      ok.querySelector('strong').textContent = `Pedido enviado, ${nome}.`;
+      form.hidden = true; ok.hidden = false;
+      fitPanels();
+    });
+  });
+
+  const dlg = document.getElementById('orcamento');
+  const openQuote = () => { setMenu(false); dlg.showModal(); document.documentElement.classList.add('is-locked'); };
+  document.querySelectorAll('[data-quote]').forEach(b => b.addEventListener('click', openQuote));
+  dlg.querySelector('[data-close]').addEventListener('click', () => dlg.close());
+  dlg.addEventListener('close', () => document.documentElement.classList.remove('is-locked'));
+  dlg.addEventListener('click', e => {
+    const r = dlg.getBoundingClientRect();
+    if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) dlg.close();
+  });
+
   /* ---------------- inicialização ---------------- */
   gsap.registerPlugin(ScrollTrigger);
   buildParallax();
   buildWorld();
   layout();
 
+  gsap.set(panels.slice(1), { autoAlpha: 0 });
   if (scrollY < 20 && !reduce) {
     S.x = -420;
-    intro = gsap.to(S, { x: REST, duration: 3.4, ease: 'power2.inOut', delay: .4 });
+    gsap.set(panels[0], { autoAlpha: 0 });
+    // abertura: o caminhão descarrega, a caixa desce a rampa e só então o título aparece
+    intro = gsap.timeline({ delay: .3 })
+      .to(S, { x: REST, duration: 3, ease: 'power2.inOut' }, 0)
+      .fromTo(panels[0], { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: .8, ease: 'power2.out' }, 1.95);
   } else {
     S.x = REST;
+    gsap.set(panels[0], { autoAlpha: 1 });
   }
   buildTimeline();
   gsap.ticker.add(render);
   railProgress();
+
+  // a faixa inferior sai quando o rodapé entra
+  const bar = document.querySelector('.bar');
+  ScrollTrigger.create({
+    trigger: '.foot', start: 'top bottom-=10',
+    onToggle: self => bar.classList.toggle('is-hidden', self.isActive)
+  });
+
+  document.fonts?.ready.then(() => { fitPanels(); ScrollTrigger.refresh(); });
 
   let rt;
   addEventListener('resize', () => {
