@@ -25,7 +25,7 @@
   const FLOOR = 640, Y = 480, LOW = 560, TF = 470; // TF = piso do baú
   // Celular: as pernas das máquinas descem por trás da faixa roxa (ela vira o "chão").
   // Assim, quando a barra do navegador recolhe e revela mais tela, aparecem mais pernas, nunca um vão.
-  const EXT = (innerWidth <= 860 || innerWidth / innerHeight < 1) ? 420 : 0;
+  const EXT = 0; // pernas no tamanho normal (a cena fica presa à faixa roxa no celular)
   const BASE = FLOOR + EXT;
   const P = {
     rampA: -180, rampB: -40,
@@ -477,28 +477,29 @@
   function layout(sceneOnly = false) {
     const W = innerWidth;
     const mobile = W <= 860 || W / innerHeight < 1;
-    // no celular a âncora usa a menor altura de tela, então a cena não pula com a barra de endereço
+    // Celular: o palco tem altura travada em px e fica preso pela base à faixa roxa (CSS bottom).
+    // Quando a barra do navegador abre ou fecha, a cena acompanha a faixa como um bloco, sem reescalar.
     const barH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--bar-h')) || 58;
-    // e a altura do palco fica travada em px: nada reescala quando a barra recolhe
     stageEl.style.height = mobile ? `${Math.max(lvhProbe.offsetHeight, innerHeight, screen.height || 0) - barH}px` : '';
-    const H = stageEl.clientHeight;
-    const HA = mobile ? Math.min(H, svhProbe.offsetHeight - barH) : H;
+    const H = stageEl.clientHeight, HA = H;
+    const VIS = mobile ? Math.min(innerHeight, svhProbe.offsetHeight) - barH : H; // área visível no pior caso (barra aberta)
+    const off = VIS - H;                                                          // topo do palco na tela
     const s = mobile ? W / 560 : Math.min(H / 740, W / 1100);
     view = { w: W / s, h: H / s, s, mobile };
     view.ax = view.w * (mobile ? .5 : .66);
     view.ay = HA / s - (mobile ? 12 : 22) / s - (FLOOR - Y) * (mobile ? ZM : 1);
     svg.setAttribute('viewBox', `0 0 ${view.w} ${view.h}`);
-    const belt = view.ay * s - 4;                     // topo da esteira na tela, em px
+    const belt = off + view.ay * s - 4;               // topo da esteira na tela, em px
     document.documentElement.style.setProperty('--belt', `${belt}px`);
     if (sceneOnly) return;
-    const road = z => (view.ay + (FLOOR - Y) * z) * s - 4;
+    const road = z => off + (view.ay + (FLOOR - Y) * z) * s - 4;
     const topH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--top-h')) || 74;
     const gap = mobile ? 10 : 18;
     const [z0, z1, z2, z8] = mobile ? ZOOM.mob : ZOOM.desk;
-    const sy = (y, z) => (view.ay + (y - Y) * z) * s;   // altura na tela de um ponto do mundo
+    const sy = (y, z) => off + (view.ay + (y - Y) * z) * s;   // altura na tela de um ponto do mundo
     bounds = panels.map((p, i) => {
       let bottom;
-      if (i === 8) bottom = HA;                                      // destino: popup no meio da tela
+      if (i === 8) bottom = VIS;                                     // destino: popup no meio da tela
       else if (i === 7) bottom = sy(BB, z8) - 6;                     // clientes: card acima das placas
       else if (mobile) bottom = sy(Y - CLEAR[i], z0);                // celular: card acima das máquinas
       else if (i < 6) bottom = belt;                                 // desktop: entre o menu e a esteira
