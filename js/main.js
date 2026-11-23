@@ -23,6 +23,10 @@
   };
   const REST = 820;
   const FLOOR = 640, Y = 480, LOW = 560, TF = 470; // TF = piso do baú
+  // Celular: as pernas das máquinas descem por trás da faixa roxa (ela vira o "chão").
+  // Assim, quando a barra do navegador recolhe e revela mais tela, aparecem mais pernas, nunca um vão.
+  const EXT = (innerWidth <= 860 || innerWidth / innerHeight < 1) ? 420 : 0;
+  const BASE = FLOOR + EXT;
   const P = {
     rampA: -180, rampB: -40,
     cub: 1900, dat: 2500, sort: 3000,
@@ -59,7 +63,7 @@
   const R = {}; // referências para o render
 
   /* ---------------- construtores ---------------- */
-  function legsFor(p, x1, y1, x2, y2, floor = FLOOR, step = 170) {
+  function legsFor(p, x1, y1, x2, y2, floor = BASE, step = 170) {
     const g = mk('g', {}, p);
     const xs = [];
     for (let lx = x1 + 28; lx < x2 - 20; lx += step) xs.push(lx);
@@ -67,14 +71,14 @@
     xs.forEach(lx => {
       const top = lerp(y1, y2, (lx - x1) / (x2 - x1)) + 24;
       mk('rect', { x: lx - 4, y: top, width: 8, height: Math.max(0, floor - top), fill: C.leg }, g);
-      mk('rect', { x: lx - 11, y: floor - 6, width: 22, height: 6, fill: C.legD }, g);
+      if (!EXT) mk('rect', { x: lx - 11, y: floor - 6, width: 22, height: 6, fill: C.legD }, g);
     });
   }
 
   function conveyor(p, x1, y1, x2, y2, type, o = {}) {
     const len = Math.hypot(x2 - x1, y2 - y1);
     const ang = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
-    if (!o.noLegs) legsFor(p, x1, y1, x2, y2, o.floor ?? FLOOR, o.legStep);
+    if (!o.noLegs) legsFor(p, x1, y1, x2, y2, o.floor ?? BASE, o.legStep);
     const g = mk('g', { transform: `translate(${x1},${y1}) rotate(${ang})`, opacity: o.opacity ?? 1 }, p);
     if (type === 'roller') {
       mk('rect', { x: 0, y: 4, width: len, height: 6, fill: '#5a5170' }, g);
@@ -243,15 +247,19 @@
   function buildWorld() {
     // galpão: só a linha do piso. Abaixo dela fica o fundo do site, então quando a barra
     // do navegador do celular recolhe e revela mais tela, nada parece se mexer.
-    mk('rect', { x: -3000, y: FLOOR, width: 6900, height: 2, fill: 'rgba(123,79,224,.35)' }, ground);
+    if (!EXT) mk('rect', { x: -3000, y: FLOOR, width: 6900, height: 2, fill: 'rgba(123,79,224,.35)' }, ground);
+    else {
+      mk('rect', { x: -3000, y: FLOOR, width: 2960, height: 600, fill: '#d9d3e5' }, ground);
+      mk('rect', { x: -3000, y: FLOOR, width: 2960, height: 4, fill: '#bdb4d1' }, ground);
+    }
     // estrada: só existe depois da doca, onde o caminhão sai
-    mk('rect', { x: 3900, y: FLOOR, width: 7400, height: 600, fill: '#d9d3e5' }, ground);
-    mk('rect', { x: 3900, y: FLOOR, width: 7400, height: 4, fill: '#bdb4d1' }, ground);
+    mk('rect', { x: 3742, y: FLOOR, width: 7560, height: 600, fill: '#d9d3e5' }, ground);
+    mk('rect', { x: 3742, y: FLOOR, width: 7560, height: 4, fill: '#bdb4d1' }, ground);
     for (let x = 3950; x < 11200; x += 110) mk('rect', { x, y: FLOOR + 52, width: 56, height: 6, fill: '#ffffff' }, ground);
 
     // doca do galpão (moldura listrada)
-    mk('rect', { x: 3700, y: 60, width: 36, height: 580, fill: '#ffffff' }, scenery);
-    mk('rect', { x: 3730, y: 60, width: 10, height: 580, fill: 'url(#pHazard)' }, scenery);
+    mk('rect', { x: 3700, y: 60, width: 36, height: 580 + EXT, fill: '#ffffff' }, scenery);
+    mk('rect', { x: 3730, y: 60, width: 10, height: 580 + EXT, fill: 'url(#pHazard)' }, scenery);
     const doca = mk('g', { transform: 'translate(3640,40)' }, scenery);
     mk('rect', { x: 0, y: 0, width: 96, height: 30, fill: '#ffffff', stroke: C.yel }, doca);
     txt(doca, 48, 20, 'DOCA 04', { 'text-anchor': 'middle', 'font-size': 12, fill: C.ink, 'letter-spacing': 2 });
@@ -292,8 +300,8 @@
     mk('rect', { x: x - 72, y: Y + 27, width: 144, height: 16, fill: '#3a3054' }, g);
     txt(g, x, Y + 60, 'BALANÇA', { 'text-anchor': 'middle', 'font-size': 10, fill: C.muted, 'letter-spacing': 2 });
     // pórtico
-    mk('rect', { x: x - 112, y: 206, width: 16, height: FLOOR - 206, fill: C.red }, g);
-    mk('rect', { x: x + 96, y: 206, width: 16, height: FLOOR - 206, fill: C.red }, g);
+    mk('rect', { x: x - 112, y: 206, width: 16, height: BASE - 206, fill: C.red }, g);
+    mk('rect', { x: x + 96, y: 206, width: 16, height: BASE - 206, fill: C.red }, g);
     mk('rect', { x: x - 120, y: 196, width: 240, height: 34, fill: '#2a2140' }, g);
     mk('rect', { x: x - 120, y: 226, width: 240, height: 3, fill: C.lime }, g);
     txt(g, x, 218, 'ADVANCED LASER', { 'text-anchor': 'middle', 'font-size': 11, fill: '#ffffff', 'letter-spacing': 2 });
@@ -314,7 +322,7 @@
     R.dims = d;
     // monitor com leituras
     const m = mk('g', {}, g);
-    mk('rect', { x: x + 150, y: 330, width: 8, height: FLOOR - 330, fill: C.leg }, m);
+    mk('rect', { x: x + 150, y: 330, width: 8, height: BASE - 330, fill: C.leg }, m);
     mk('rect', { x: x + 98, y: 232, width: 116, height: 104, fill: '#1e1533', stroke: '#cbbfeb', 'stroke-width': 3 }, m);
     R.rd = ['A', 'L', 'C', 'P'].map((k, i) => txt(m, x + 108, 254 + i * 21, `${k} --`, { 'font-size': 12, fill: '#d4c6fb' }));
     R.screenX = x + 156; R.screenY = 232;
@@ -323,8 +331,8 @@
   function buildDados() {
     const x = P.dat, g = mk('g', {}, mback), f = mk('g', {}, mfront);
     // pórtico do webservice com antena no topo
-    mk('rect', { x: x - 90, y: 300, width: 10, height: FLOOR - 300, fill: C.leg }, g);
-    mk('rect', { x: x + 80, y: 300, width: 10, height: FLOOR - 300, fill: C.leg }, g);
+    mk('rect', { x: x - 90, y: 300, width: 10, height: BASE - 300, fill: C.leg }, g);
+    mk('rect', { x: x + 80, y: 300, width: 10, height: BASE - 300, fill: C.leg }, g);
     mk('rect', { x: x - 96, y: 288, width: 192, height: 20, fill: '#2a2140' }, g);
     txt(g, x, 302, 'WEBSERVICE', { 'text-anchor': 'middle', 'font-size': 10, fill: '#ffffff', 'letter-spacing': 2 });
     R.gate = mk('rect', { x: x - 96, y: 306, width: 192, height: 3, fill: C.lime, opacity: .2 }, g);
@@ -352,8 +360,8 @@
   function buildSorter() {
     const x = P.sort, g = mk('g', {}, mback), f = mk('g', {}, mfront);
     // placa de rotas
-    mk('rect', { x: x - 120, y: 250, width: 8, height: FLOOR - 250, fill: C.leg }, g);
-    mk('rect', { x: x + 150, y: 250, width: 8, height: FLOOR - 250, fill: C.leg }, g);
+    mk('rect', { x: x - 120, y: 250, width: 8, height: BASE - 250, fill: C.leg }, g);
+    mk('rect', { x: x + 150, y: 250, width: 8, height: BASE - 250, fill: C.leg }, g);
     mk('rect', { x: x - 130, y: 222, width: 298, height: 46, fill: '#ffffff', stroke: '#cbbfeb', 'stroke-width': 2 }, g);
     R.lanes = ['SC-01', 'SC-02', 'RS-01'].map((n, i) => {
       const lx = x - 122 + i * 96;
@@ -462,11 +470,18 @@
   svhProbe.style.cssText = 'position:fixed;top:0;left:0;width:0;height:100vh;height:100svh;visibility:hidden;pointer-events:none';
   document.body.appendChild(svhProbe);
 
+  const lvhProbe = svhProbe.cloneNode();
+  lvhProbe.style.height = '100vh'; lvhProbe.style.height = '100lvh';
+  document.body.appendChild(lvhProbe);
+
   function layout(sceneOnly = false) {
-    const W = innerWidth, H = stageEl.clientHeight;
+    const W = innerWidth;
     const mobile = W <= 860 || W / innerHeight < 1;
     // no celular a âncora usa a menor altura de tela, então a cena não pula com a barra de endereço
     const barH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--bar-h')) || 58;
+    // e a altura do palco fica travada em px: nada reescala quando a barra recolhe
+    stageEl.style.height = mobile ? `${Math.max(lvhProbe.offsetHeight, innerHeight, screen.height || 0) - barH}px` : '';
+    const H = stageEl.clientHeight;
     const HA = mobile ? Math.min(H, svhProbe.offsetHeight - barH) : H;
     const s = mobile ? W / 560 : Math.min(H / 740, W / 1100);
     view = { w: W / s, h: H / s, s, mobile };
