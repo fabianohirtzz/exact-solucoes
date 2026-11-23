@@ -28,7 +28,7 @@
     cub: 1900, dat: 2500, sort: 3000,
     chuteA: 3060, chuteB: 3160, incA: 3500, incB: 3740,
     truck: 3750, inTruck: 4010,
-    factory: 4900, clientsA: 6150, dest: 8650, end: 8210
+    factory: 4900, clientsA: 6150, dest: 8650, end: 8030
   };
 
   // caminho que a caixa percorre (y em função de x)
@@ -399,16 +399,16 @@
 
   function buildDestination() {
     const x = P.dest, g = mk('g', {}, scenery);
-    mk('rect', { x, y: 140, width: 760, height: FLOOR - 140, fill: '#e3dcf4' }, g);
-    mk('rect', { x, y: 140, width: 760, height: 6, fill: C.lime, opacity: .5 }, g);
+    mk('rect', { x, y: -60, width: 760, height: FLOOR + 60, fill: '#e3dcf4' }, g);
+    mk('rect', { x, y: -60, width: 760, height: 6, fill: C.lime, opacity: .5 }, g);
     for (let i = 0; i < 3; i++) {
       mk('rect', { x: x + 60 + i * 230, y: 380, width: 170, height: 260, fill: '#cfc5ea' }, g);
       mk('rect', { x: x + 60 + i * 230, y: 370, width: 170, height: 10, fill: 'url(#pHazard)' }, g);
     }
-    R.destSign = mk('g', { transform: `translate(${x + 90},190)` }, g);
+    R.destSign = mk('g', { transform: `translate(${x + 120},0)` }, g);
     R.destBg = mk('rect', { x: 0, y: 0, width: 520, height: 110, fill: '#ffffff', stroke: C.lime, 'stroke-width': 3 }, R.destSign);
     R.destT1 = txt(R.destSign, 260, 48, 'SUA OPERAÇÃO', { 'text-anchor': 'middle', 'font-size': 40, 'font-weight': 600, fill: C.ink, 'letter-spacing': 3 });
-    txt(R.destSign, 260, 86, 'PRÓXIMO DESTINO', { 'text-anchor': 'middle', 'font-size': 16, fill: C.lime, 'letter-spacing': 6 });
+    R.destT2 = txt(R.destSign, 260, 86, 'PRÓXIMO DESTINO', { 'text-anchor': 'middle', 'font-size': 16, fill: C.lime, 'letter-spacing': 6 });
   }
 
   // fundo em paralaxe: estantes do galpão e depois morros do Vale
@@ -540,6 +540,7 @@
     // destino
     R.destBg.setAttribute('fill', S.done > .5 ? C.lime : '#ffffff');
     R.destT1.setAttribute('fill', S.done > .5 ? '#ffffff' : C.ink);
+    R.destT2.setAttribute('fill', S.done > .5 ? '#e7defd' : C.lime);
   }
 
   /* ---------------- timeline de scroll ---------------- */
@@ -604,7 +605,7 @@
     // 08 clientes
     go(7, 0, 1, { x: 5600, truck: 5600 - lead }, { x: 7300, truck: 7300 - lead });
     // 09 destino
-    go(8, 0, .6, { camOff: 180, zoom: z1 }, { camOff: view.mobile ? 600 : 520, zoom: z2 }, 'power1.inOut');
+    go(8, 0, .6, { camOff: 180, zoom: z1 }, { camOff: view.mobile ? 860 : 640, zoom: z2 }, 'power1.inOut');
     go(8, 0, .6, { x: 7300, truck: 7300 - lead }, { x: P.end, truck: P.end - lead }, 'power2.out');
     go(8, .6, .7, { done: 0 }, { done: 1 });
     tl.set({}, {}, max); // duração da timeline = pixels de scroll
@@ -739,10 +740,107 @@
 
   // a faixa inferior sai quando o rodapé entra
   const bar = document.querySelector('.bar');
-  ScrollTrigger.create({
-    trigger: '.foot', start: 'top bottom-=10',
-    onToggle: self => bar.classList.toggle('is-hidden', self.isActive)
-  });
+  new IntersectionObserver(([e]) => bar.classList.toggle('is-hidden', e.isIntersecting))
+    .observe(document.querySelector('.foot'));
+
+  // fundo do rodapé: esteiras vistas de cima com caixas circulando (tom bem claro)
+  (() => {
+    const cv = document.querySelector('.foot__belts');
+    if (!cv) return;
+    const ctx = cv.getContext('2d');
+    const BELTS = [
+      [[-.05, .26], [1.05, .26]],
+      [[.38, .26], [.46, .40], [1.05, .40]],
+      [[.62, .26], [.70, .12], [1.05, .12]],
+      [[1.05, .80], [.15, .80], [.15, .26]]
+    ];
+    const ROUTES = [
+      [[-.05, .26], [1.05, .26]],
+      [[-.05, .26], [.38, .26], [.46, .40], [1.05, .40]],
+      [[-.05, .26], [.62, .26], [.70, .12], [1.05, .12]],
+      [[1.05, .80], [.15, .80], [.15, .26], [.62, .26], [.70, .12], [1.05, .12]],
+      [[1.05, .80], [.15, .80], [.15, .26], [.38, .26], [.46, .40], [1.05, .40]]
+    ];
+    let W = 0, H = 0, bw = 28, boxes = [], last = 0, spawn = 0, raf = 0, seed = 3;
+    const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
+    const pts = r => r.map(([a, b]) => [a * W, b * H]);
+    const lenOf = p => p.slice(1).reduce((t, q, i) => t + Math.hypot(q[0] - p[i][0], q[1] - p[i][1]), 0);
+    function at(p, d) {
+      for (let i = 1; i < p.length; i++) {
+        const [x0, y0] = p[i - 1], [x1, y1] = p[i], l = Math.hypot(x1 - x0, y1 - y0);
+        if (d <= l) return [x0 + (x1 - x0) * d / l, y0 + (y1 - y0) * d / l, Math.atan2(y1 - y0, x1 - x0)];
+        d -= l;
+      }
+      const q = p[p.length - 1]; return [q[0], q[1], 0];
+    }
+    function size() {
+      const dpr = Math.min(devicePixelRatio || 1, 2);
+      W = cv.clientWidth; H = cv.clientHeight;
+      cv.width = W * dpr; cv.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      bw = W < 700 ? 22 : 28;
+    }
+    function addBox(d0 = 0) {
+      const p = pts(ROUTES[Math.floor(rnd() * ROUTES.length)]);
+      boxes.push({ p, len: lenOf(p), d: d0, s: bw * (.5 + rnd() * .22) });
+    }
+    function draw(t) {
+      ctx.clearRect(0, 0, W, H);
+      const run = (t / 1000) * 46;
+      BELTS.forEach(b => {
+        const p = pts(b);
+        ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+        ctx.strokeStyle = 'rgba(201,184,245,.13)'; ctx.lineWidth = bw + 3;
+        ctx.beginPath(); p.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke();
+        // recorta o miolo: sobra a borda e um véu bem leve na lona
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.strokeStyle = 'rgba(0,0,0,.75)'; ctx.lineWidth = bw - 1;
+        ctx.stroke();
+        ctx.globalCompositeOperation = 'source-over';
+        // roletes andando no sentido da esteira
+        ctx.strokeStyle = 'rgba(201,184,245,.09)'; ctx.lineWidth = 1.5;
+        for (let i = 1; i < p.length; i++) {
+          const [x0, y0] = p[i - 1], [x1, y1] = p[i], l = Math.hypot(x1 - x0, y1 - y0);
+          const ux = (x1 - x0) / l, uy = (y1 - y0) / l, h = bw / 2 - 3;
+          for (let d = run % 14; d < l; d += 14) {
+            const cx = x0 + ux * d, cy = y0 + uy * d;
+            ctx.beginPath(); ctx.moveTo(cx - uy * h, cy + ux * h); ctx.lineTo(cx + uy * h, cy - ux * h); ctx.stroke();
+          }
+        }
+      });
+      boxes.forEach(b => {
+        const [x, y, a] = at(b.p, b.d), h = b.s / 2;
+        ctx.save(); ctx.translate(x, y); ctx.rotate(a);
+        ctx.fillStyle = 'rgba(201,145,88,.2)'; ctx.fillRect(-h, -h, b.s, b.s);
+        ctx.fillStyle = 'rgba(240,214,171,.16)'; ctx.fillRect(-h, -1.5, b.s, 3);
+        ctx.strokeStyle = 'rgba(240,214,171,.22)'; ctx.lineWidth = 1; ctx.strokeRect(-h, -h, b.s, b.s);
+        ctx.restore();
+      });
+    }
+    function tick(t) {
+      const dt = Math.min(.05, (t - (last || t)) / 1000); last = t;
+      spawn -= dt;
+      if (spawn <= 0) { addBox(); spawn = 1.1 + rnd() * .9; }
+      boxes.forEach(b => (b.d += dt * 46));
+      boxes = boxes.filter(b => b.d < b.len);
+      draw(t);
+      raf = requestAnimationFrame(tick);
+    }
+    function prime() { boxes = []; for (let i = 0; i < 14; i++) { addBox(); boxes[i].d = rnd() * boxes[i].len; } }
+    size(); prime(); draw(0);
+    new IntersectionObserver(([e]) => {
+      if (reduce) return;
+      if (e.isIntersecting && !raf) { last = 0; raf = requestAnimationFrame(tick); }
+      else if (!e.isIntersecting && raf) { cancelAnimationFrame(raf); raf = 0; }
+    }).observe(cv);
+    addEventListener('resize', () => { size(); prime(); draw(0); });
+  })();
+
+  const sig = document.querySelector('.sig');
+  const sigIo = new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) { sig.classList.add('is-on'); sigIo.disconnect(); }
+  }, { rootMargin: '0px 0px -20px 0px' });
+  sigIo.observe(sig);
 
   document.fonts?.ready.then(() => { fitPanels(); ScrollTrigger.refresh(); });
 
