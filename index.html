@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Exact Soluções | Automação logística: cubagem, transportadores e sorters</title>
+  <meta name="description" content="A Exact projeta e fabrica em Rodeio/SC cubagem dinâmica, transportadores de lona, roletes e modulares, sorters e rampas de carga para centros de distribuição.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta property="og:title" content="Exact Soluções | Automatizando o universo logístico">
+  <meta property="og:description" content="Acompanhe uma caixa do recebimento ao destino e veja cada máquina da Exact em ação.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#f4f2fa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="top">
+    <a class="top__logo" href="#recebimento" aria-label="Exact Soluções, início">
+      <img src="assets/img/logo-exact.png" alt="Exact Soluções" width="150" height="49">
+    </a>
+    <nav class="rail" aria-label="Etapas do percurso">
+      <div class="rail__line"><span class="rail__fill"></span><ol class="rail__steps"></ol><span class="rail__box"></span></div>
+      <p class="rail__now"><span class="rail__num">01</span><span class="rail__label">Recebimento</span></p>
+    </nav>
+    <a class="btn btn--sm" href="https://wa.me/message/T6ADM7QQDJP3N1" target="_blank" rel="noopener">Orçamento</a>
+  </header>
+
+  <!-- Palco fixo: a linha de produção inteira, desenhada pelo js/main.js -->
+  <div class="stage" aria-hidden="true">
+    <div class="stage__grid"></div>
+    <svg id="scene" preserveAspectRatio="xMinYMin slice">
+      <defs>
+        <pattern id="pBelt" width="26" height="14" patternUnits="userSpaceOnUse">
+          <rect width="26" height="14" fill="#3a3350"/>
+          <rect width="3" height="14" fill="#4d4566"/>
+        </pattern>
+        <pattern id="pMod" width="16" height="14" patternUnits="userSpaceOnUse">
+          <rect width="16" height="14" fill="#b9aedb"/>
+          <rect x="1" y="1" width="14" height="5" rx="1" fill="#dcd4f6"/>
+          <rect x="1" y="8" width="14" height="5" rx="1" fill="#cbc0ec"/>
+        </pattern>
+        <pattern id="pHazard" width="20" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <rect width="20" height="20" fill="#f3c316"/>
+          <rect width="10" height="20" fill="#2a2338"/>
+        </pattern>
+        <linearGradient id="gLaser" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#7b4fe0" stop-opacity=".85"/>
+          <stop offset="1" stop-color="#7b4fe0" stop-opacity=".05"/>
+        </linearGradient>
+        <linearGradient id="gGlow" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#7b4fe0" stop-opacity="0"/>
+          <stop offset="1" stop-color="#7b4fe0" stop-opacity=".35"/>
+        </linearGradient>
+        <filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="4" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <g id="para"></g>
+      <g id="cam">
+        <g id="ground"></g>
+        <g id="scenery"></g>
+        <g id="lines"></g>
+        <g id="mback"></g>
+        <g id="boxLayer"></g>
+        <g id="trucks"></g>
+        <g id="mfront"></g>
+      </g>
+    </svg>
+  </div>
+
+  <main id="conteudo">
+
+    <section class="step step--hero" id="recebimento" data-label="Recebimento">
+      <div class="panel">
+        <p class="eyebrow"><span>Etapa 1</span>Recebimento na rampa de descarga</p>
+        <h1>Pensar fora da caixa. Automatizar dentro dela.</h1>
+        <p class="lead">A Exact projeta e fabrica as máquinas que movem, medem e separam cada volume do seu centro de distribuição. Do caminhão que chega ao caminhão que sai.</p>
+        <div class="actions">
+          <a class="btn" href="https://wa.me/message/T6ADM7QQDJP3N1" target="_blank" rel="noopener">Falar com um especialista</a>
+          <a class="btn btn--ghost" href="#transporte">Seguir a caixa</a>
+        </div>
+        <dl class="stats">
+          <div><dt>até 2.200</dt><dd>volumes por hora na cubagem dinâmica</dd></div>
+          <div><dt>80 kg</dt><dd>capacidade por volume medido</dd></div>
+          <div><dt>Rodeio/SC</dt><dd>projeto e fabricação</dd></div>
+        </dl>
+      </div>
+      <p class="cue">Role a página para ligar a esteira</p>
+    </section>
+
+    <section class="step" id="transporte" data-label="Transporte">
+      <div class="panel">
+        <p class="eyebrow"><span>Etapa 2</span>Transporte e movimentação</p>
+        <h2>Lona, roletes ou modular. A esteira certa para cada carga.</h2>
+        <p>Estrutura em aço carbono com pintura eletrostática, motorredutores WEG e cordão de emergência em toda a lateral. Cada linha é dimensionada para o produto, o layout e o ritmo da sua operação.</p>
+        <ul class="specs specs--3">
+          <li><strong>Lona</strong><span>25 a 1.200 mm de largura. Aceita aclive, declive e curvas. Triagem, carga e objetos pesados.</span></li>
+          <li><strong>Roletes</strong><span>50 a 1.300 mm, ajuste de 1 em 1 mm. Manutenção baixa e comprimento livre.</span></li>
+          <li><strong>Modular</strong><span>Linhas longas de picking, carga e descarga em CDs de e-commerce.</span></li>
+        </ul>
+        <div class="shots">
+          <img src="assets/img/lona-linha.webp" alt="Linha de transportadores de lona com estrutura vermelha" loading="lazy">
+          <img src="assets/img/modular-picking.webp" alt="Transportador modular de roletes em corredor de picking" loading="lazy">
+        </div>
+      </div>
+    </section>
+
+    <section class="step" id="cubagem" data-label="Cubagem">
+      <div class="panel">
+        <p class="eyebrow"><span>Etapa 3</span>Cubagem dinâmica Advanced Laser</p>
+        <h2>Mediu, pesou e leu. Sem parar a linha.</h2>
+        <p>O dimensionador a laser mede volumes irregulares em movimento, a balança pesa e a leitora captura o código de barras automaticamente. Para bancadas, a SmartCubo Standard faz o mesmo de forma estática, com balança homologada pelo INMETRO.</p>
+        <ul class="specs">
+          <li><strong>2.200</strong><span>pacotes por hora</span></li>
+          <li><strong>200 g a 80 kg</strong><span>faixa de pesagem</span></li>
+          <li><strong>3×5×5 a 100×90×140</strong><span>cm por volume</span></li>
+          <li><strong>25 m²</strong><span>de área de instalação</span></li>
+        </ul>
+        <div class="shots">
+          <img src="assets/img/cubagem-laser.webp" alt="Projeto da cubagem dinâmica Advanced Laser sobre transportadores" loading="lazy">
+          <img src="assets/img/smartcubo.webp" alt="SmartCubo Standard, cubagem estática com balança" loading="lazy">
+        </div>
+      </div>
+    </section>
+
+    <section class="step" id="dados" data-label="Integração">
+      <div class="panel">
+        <p class="eyebrow"><span>Etapa 4</span>Integração de dados</p>
+        <h2>Cada medida vira dado no seu sistema.</h2>
+        <p>Integração padrão via webservice com qualquer ERP, WMS ou TMS do mercado. O frete passa a ser calculado com o peso cubado real, volume a volume, com rastro de quando e onde cada caixa foi medida.</p>
+        <pre class="code" aria-label="Exemplo de registro enviado pela cubagem"><code>{
+  <i>"volume"</i>: "EX-48213",
+  <i>"altura_cm"</i>: 32,
+  <i>"largura_cm"</i>: 45,
+  <i>"comprimento_cm"</i>: 60,
+  <i>"peso_kg"</i>: 8.42,
+  <i>"rota"</i>: "SC-02",
+  <i>"status"</i>: <b>"cubado"</b>
+}</code></pre>
+      </div>
+    </section>
+
+    <section class="step" id="triagem" data-label="Triagem">
+      <div class="panel">
+        <p class="eyebrow"><span>Etapa 5</span>Triagem no sorter</p>
+        <h2>Cada volume desviado para a rota certa.</h2>
+        <p>Com o código lido na cubagem, o sorter sabe o destino de cada caixa e a desvia para a rampa da rota, sem ninguém precisar tocar no volume. Disponível em versão modular e pneumática, esta com projeto patenteado.</p>
+        <div class="shots">
+          <img src="assets/img/sorter-pneumatico.webp" alt="Sorter pneumático com desviadores amarelos" loading="lazy">
+          <img src="assets/img/sorter-modular.webp" alt="Projeto de sorter modular com saídas em rampa" loading="lazy">
+        </div>
+      </div>
+    </section>
+
+    <section class="step" id="expedicao" data-label="Expedição">
+      <div class="panel">
+        <p class="eyebrow"><span>Etapa 6</span>Expedição e carregamento</p>
+        <h2>Do sorter direto para dentro do baú.</h2>
+        <p>O transportador modular de carga e descarga entra no caminhão e leva o volume até o fundo do baú. Projeto patenteado, com rampas de carga e descarga sob medida para cada doca.</p>
+        <div class="shots">
+          <img src="assets/img/carregamento.webp" alt="Projeto de transportador de carga entrando em carreta" loading="lazy">
+          <img src="assets/img/rampa.webp" alt="Rampa de carga e descarga amarela" loading="lazy">
+        </div>
+      </div>
+    </section>
+
+    <section class="step" id="fabrica" data-label="Fábrica">
+      <div class="panel">
+        <p class="eyebrow"><span>Etapa 7</span>Fábrica em Rodeio/SC</p>
+        <h2>Tudo isso sai daqui. Peça por peça.</h2>
+        <ul class="specs specs--list">
+          <li><strong>Usinagem</strong><span>Torno CNC, torno convencional e fresa, com laboratório de metrologia.</span></li>
+          <li><strong>Roletes</strong><span>Tubo galvanizado de 50,8 mm, eixo maciço de 15 mm e rolamentos 6002.</span></li>
+          <li><strong>Solda e pintura</strong><span>MIG, MAG e TIG em inox, alumínio e aço carbono. Pintura eletrostática a pó.</span></li>
+          <li><strong>NR12 e assistência</strong><span>Adequação de máquinas à norma e técnicos em campo para manutenção.</span></li>
+        </ul>
+        <div class="shots">
+          <img src="assets/img/roletes-fabricacao.webp" alt="Roletes galvanizados fabricados na fábrica" loading="lazy">
+          <img src="assets/img/solda.webp" alt="Soldador trabalhando em estrutura metálica" loading="lazy">
+        </div>
+      </div>
+    </section>
+
+    <section class="step" id="clientes" data-label="Clientes">
+      <div class="panel">
+        <p class="eyebrow"><span>Etapa 8</span>Quem já roda com a Exact</p>
+        <h2>Operações que não podem parar.</h2>
+        <p>Transportadoras, operadores de e-commerce e centros de distribuição que movimentam milhares de volumes por dia.</p>
+        <ul class="clients">
+          <li>J&amp;T Express</li><li>Rodonaves</li><li>Saturno Brasil</li><li>FM Transportes</li>
+          <li>Ícaro Express</li><li>R3 Express</li><li>Vestra</li><li>Aceville</li><li>Duloc</li><li>Dia &amp; Noite</li>
+        </ul>
+        <figure class="case">
+          <img src="assets/img/case-shein.webp" alt="Linha de transportadores com proteção amarela instalada em centro de distribuição" loading="lazy">
+          <figcaption><strong>Case</strong> Linha de transportadores com proteção de segurança para operação de e-commerce.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="step step--end" id="destino" data-label="Destino">
+      <div class="panel">
+        <p class="eyebrow"><span>Destino</span>Fim do percurso</p>
+        <h2>A próxima entrega é na sua operação.</h2>
+        <p>Conte como funciona o seu centro de distribuição hoje. A Exact desenha a linha, fabrica e instala.</p>
+        <div class="actions">
+          <a class="btn" href="https://wa.me/message/T6ADM7QQDJP3N1" target="_blank" rel="noopener">Solicitar projeto pelo WhatsApp</a>
+          <a class="btn btn--ghost" href="https://www.instagram.com/solucoesexact/" target="_blank" rel="noopener">@solucoesexact</a>
+        </div>
+        <address>Fábrica: R. Ribeirão do Salto, 156, Rodeio/SC, CEP 89136-000</address>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>Exact Soluções, automação logística</p>
+    <p class="foot__note">Protótipo conceitual por Freela In Home</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
